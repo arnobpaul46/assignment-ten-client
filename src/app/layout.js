@@ -1,5 +1,5 @@
-
 import Navbar from "@/components/Navbar";
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 
 
@@ -18,7 +18,9 @@ export default function RootLayout({ children }) {
         
         <Navbar/>
         
-        {children}</body>
+        {children}
+        <Toaster position="top-center" richColors />
+        </body>
     </html>
   );
 }

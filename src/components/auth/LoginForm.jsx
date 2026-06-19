@@ -3,28 +3,56 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, ArrowRight } from "lucide-react"; 
+import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react"; 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { authClient } from "@/lib/auth-client"; 
+import { toast } from "sonner";
 
 const LoginForm = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === "admin@fable.com" && password === "Admin@123") {
-      router.push('/dashboard');
-    } else {
-      router.push('/');
-    }
+    setLoading(true);
+
+    const toastId = toast.loading("Verifying your account...");
+
+    const { data, error } = await authClient.signIn.email({
+      email,
+      password,
+    }, {
+      onSuccess: () => {
+        toast.success("Logged in successfully!", { id: toastId });
+        
+        // Admin Logic: শুধুমাত্র admin@fable.com হলে ড্যাশবোর্ডে যাবে
+        if (email === "admin@fable.com") {
+          router.push('/dashboard');
+        } else {
+          router.push('/');
+        }
+        router.refresh();
+      },
+      onError: (ctx) => {
+        toast.error(ctx.error.message || "Invalid credentials", { id: toastId });
+      }
+    });
+    setLoading(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
   };
 
   return (
-    <div className="min-h-[85vh] flex flex-col items-center justify-center bg-[#09090b] py-10 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] py-10 px-4">
       <div className="w-full max-w-[440px] bg-[#111113] border border-zinc-800/50 p-8 rounded-[32px] shadow-2xl">
-        
         
         <div className="flex bg-black/40 p-1.5 rounded-2xl mb-10 border border-zinc-800/50">
           <button onClick={() => router.push('/login')} className="flex-1 bg-[#ff1e6d] text-white py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-pink-500/20">Login</button>
@@ -34,8 +62,7 @@ const LoginForm = () => {
         <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Welcome back</h2>
         <p className="text-zinc-500 mb-8 text-sm font-light">Sign in to continue your reading journey.</p>
 
-        
-        <Button variant="outline" className="w-full h-12 bg-black/20 border-zinc-800 hover:bg-black/40 text-white hover:text-white gap-3 rounded-2xl mb-8 font-semibold">
+        <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-12 bg-black/20 border-zinc-800 hover:bg-black/40 text-white gap-3 rounded-2xl mb-8 font-semibold transition-all">
           <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -45,12 +72,7 @@ const LoginForm = () => {
           Continue with Google
         </Button>
 
-        <div className="relative mb-8">
-          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-zinc-800/50"></span></div>
-          <div className="relative flex justify-center text-[10px] uppercase tracking-widest text-zinc-600"><span className="bg-[#111113] px-4">or continue with email</span></div>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleLogin} className="space-y-5 text-white">
           <div className="space-y-2">
             <Label className="text-zinc-400 font-medium ml-1">Email Address</Label>
             <div className="relative">
@@ -58,7 +80,7 @@ const LoginForm = () => {
               <Input 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-black/20 border-zinc-800 h-12 pl-12 text-white rounded-2xl focus:border-[#ff1e6d] transition-all" 
+                className="bg-black/20 border-zinc-800 h-12 pl-12 text-white rounded-2xl focus:border-[#ff1e6d] focus:ring-0 transition-all" 
                 placeholder="your@email.com" 
                 required
               />
@@ -73,15 +95,15 @@ const LoginForm = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-black/20 border-zinc-800 h-12 pl-12 text-white rounded-2xl focus:border-[#ff1e6d]" 
+                className="bg-black/20 border-zinc-800 h-12 pl-12 text-white rounded-2xl focus:border-[#ff1e6d] focus:ring-0" 
                 placeholder="••••••••" 
                 required
               />
             </div>
           </div>
 
-          <Button type="submit" className="w-full h-14 bg-[#ff1e6d] hover:bg-[#e61a62] text-white rounded-2xl font-bold text-lg mt-4 shadow-lg shadow-pink-500/10 flex gap-2">
-            Sign In to Fable <ArrowRight size={20} />
+          <Button disabled={loading} type="submit" className="w-full h-14 bg-[#ff1e6d] hover:bg-[#e61a62] text-white rounded-2xl font-bold text-lg mt-4 shadow-lg shadow-pink-500/10 flex gap-2 transition-all active:scale-95">
+            {loading ? <Loader2 className="animate-spin" /> : "Sign In to Fable"} <ArrowRight size={20} />
           </Button>
         </form>
 
@@ -90,12 +112,11 @@ const LoginForm = () => {
         </p>
       </div>
 
-      
       <div className="mt-8 p-5 bg-zinc-900/20 border border-zinc-800/50 rounded-2xl text-center max-w-[440px] w-full">
         <p className="text-zinc-500 text-[10px] font-bold mb-3 uppercase tracking-[3px]">Admin Credentials</p>
         <div className="flex justify-center gap-6 text-sm">
-           <p className="text-zinc-400">Email: <span className="text-white font-mono ml-1">admin@fable.com</span></p>
-           <p className="text-zinc-400">Pass: <span className="text-white font-mono ml-1">Admin@123</span></p>
+           <p className="text-zinc-400 font-light italic">Email: <span className="text-white font-mono ml-1 not-italic font-bold">admin@fable.com</span></p>
+           <p className="text-zinc-400 font-light italic">Pass: <span className="text-white font-mono ml-1 not-italic font-bold">Admin@123</span></p>
         </div>
       </div>
     </div>
