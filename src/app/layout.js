@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className="bg-[#09090b] text-white antialiased">
+      <body className="bg-[#09090b] text-white antialiased suppressHydrationWarning">
         {/* যদি ড্যাশবোর্ড না হয়, তবেই মেইন নেভবার দেখাবে */}
         {!isDashboard && <Navbar />}
         
