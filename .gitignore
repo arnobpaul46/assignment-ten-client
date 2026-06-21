@@ -1,6 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-@/app/browse_books
+/app/browse_books
 @/app/dashboard/admin/page.jsx
 @/app/dashboard/layout/page.jsx
 @/app/dashboard/writer/page.jsx
