@@ -110,7 +110,7 @@ const EbooksTab = () => {
                     </div>
                   </td>
                   <td className="text-right px-10">
-                     {/* এখানে ডিলিট আইডি সেট করা হচ্ছে */}
+                     
                      <button onClick={() => setDeleteId(book._id)} className="h-11 w-11 bg-zinc-900 border border-zinc-700 text-red-500 hover:bg-red-500 hover:text-white rounded-xl flex items-center justify-center transition-all ml-auto active:scale-95 shadow-lg">
                         <Trash2 size={18}/>
                      </button>

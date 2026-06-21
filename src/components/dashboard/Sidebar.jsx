@@ -1,5 +1,5 @@
 "use client"
-import { BarChart3, Users, BookText, CreditCard, LogOut, Home, PlusCircle } from "lucide-react";
+import { BarChart3, Users, BookText, CreditCard, LogOut, Home, PlusCircle, Heart, ShoppingBag, User as UserIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -8,28 +8,27 @@ import Link from "next/link";
 const Sidebar = ({ activeTab, setActiveTab, role }) => {
   const router = useRouter();
 
-  const handleLogout = async () => {
-    const toastId = toast.loading("Logging out...");
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("Logged out", { id: toastId });
-          router.push("/login");
-          router.refresh();
-        },
-      },
-    });
-  };
-
-  const links = role === "admin" ? [
+  const adminLinks = [
     { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "manage-users", label: "Manage Users", icon: Users },
     { id: "all-ebooks", label: "Manage Ebooks", icon: BookText },
-  ] : [
+  ];
+
+  const writerLinks = [
     { id: "my-ebooks", label: "My Ebooks", icon: BookText },
     { id: "add-ebook", label: "Publish Book", icon: PlusCircle },
     { id: "sales", label: "Sales History", icon: CreditCard },
   ];
+
+  // --- USER (READER) LINKS ---
+  const userLinks = [
+    { id: "purchased-gallery", label: "My Library", icon: BookText },
+    { id: "purchase-history", label: "Purchase History", icon: ShoppingBag },
+    { id: "bookmarks", label: "Bookmarks", icon: Heart },
+    { id: "profile", label: "My Profile", icon: UserIcon },
+  ];
+
+  const links = role === "admin" ? adminLinks : role === "writer" ? writerLinks : userLinks;
 
   return (
     <div className="flex flex-col h-full bg-[#0c0c0e] p-6 lg:p-8 border-r border-zinc-800/60">
@@ -45,9 +44,7 @@ const Sidebar = ({ activeTab, setActiveTab, role }) => {
         ))}
       </nav>
       <div className="border-t border-zinc-800/60 pt-6 mt-auto">
-        <button onClick={handleLogout} className="w-full flex items-center gap-4 px-5 py-4 text-red-500 hover:bg-red-500/10 rounded-2xl transition-all font-black text-xs uppercase">
-          <LogOut size={18} /> Logout Session
-        </button>
+        <button onClick={() => authClient.signOut({ onSuccess: () => router.push("/login") })} className="w-full flex items-center gap-4 px-5 py-4 text-red-500 hover:bg-red-500/10 rounded-2xl transition-all font-black text-xs uppercase"><LogOut size={18} /> Logout</button>
       </div>
     </div>
   );
