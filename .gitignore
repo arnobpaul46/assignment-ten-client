@@ -1,6 +1,33 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-   
+@/app/browse_books
+@/app/dashboard/admin/page.jsx
+@/app/dashboard/layout/page.jsx
+@/app/dashboard/writer/page.jsx
+@/app/dashboard/admin/page.jsx
+
+
+
+@/components/auth/LoginForm.jsx
+@/components/auth/RegisterForm.jsx
+@/components/dashboard/Sidebar.jsx
+@/components/admin/AnalyticsTab.jsx
+@/components/admin/EbooksTab.jsx
+@/components/admin/UsersTab.jsx
+@/components/admin/TransactionsTab.jsx
+@/components/writer/AddEbookTab.jsx
+@/components/writer/MyEbooksTab.jsx
+@/components/writer/SalesHistoryTab.jsx
+@/components/writer/WriterProfileTab.jsx        
+
+@/components/Navbar.jsx
+
+
+
+
+
+
+
 # dependencies
 /node_modules
 /.pnp

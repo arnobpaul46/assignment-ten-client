@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 export default function DashboardLayout({ children }) {
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-[#09090b] suppressHydrationWarning">
       {children}
     </div>
   );

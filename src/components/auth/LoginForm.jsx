@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react"; 
+import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
-import { authClient } from "@/lib/auth-client"; 
+import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import Link from 'next/link';
 
@@ -15,38 +15,38 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  
+
+  // src/components/auth/LoginForm.jsx এর handleLogin ফাংশনটি এভাবে আপডেট করুন
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const toastId = toast.loading("Verifying credentials...");
+    const toastId = toast.loading("Verifying credentials..."); // এটি আইডি রিটার্ন করে
 
-    await authClient.signIn.email({
-      email,
-      password,
-    }, {
-      onSuccess: () => {
-        toast.success("Welcome back!", { id: toastId });
-        if (email === "admin@fable.com") {
+    try {
+      await authClient.signIn.email({ email, password }, {
+        onSuccess: (ctx) => {
+          toast.success("Welcome back!", { id: toastId }); // এখানে ঐ আইডি দিয়ে আপডেট করতে হবে
+          // রিডাইরেক্ট লজিক...
           router.push('/dashboard');
-        } else {
-          router.push('/');
+          router.refresh();
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message || "Login failed", { id: toastId }); // ভুল হলে এটি মেসেজ দিবে
         }
-        router.refresh();
-      },
-      onError: (ctx) => {
-        toast.error(ctx.error.message || "Invalid credentials", { id: toastId });
-      }
-    });
-    setLoading(false);
+      });
+    } catch (err) {
+      toast.dismiss(toastId); // যেকোনো এররে এটি বন্ধ হয়ে যাবে
+    } finally {
+      setLoading(false);
+    }
   };
 
-  
+
   const handleGoogleLogin = async () => {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/", 
+        callbackURL: "/",
       });
     } catch (err) {
       toast.error("Google login failed");
@@ -56,7 +56,7 @@ const LoginForm = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] py-10 px-4">
       <div className="w-full max-w-[440px] bg-[#111113] border border-zinc-800/50 p-8 rounded-[32px] shadow-2xl">
-        
+
         <div className="flex bg-black/40 p-1.5 rounded-2xl mb-10 border border-zinc-800/50">
           <button type="button" onClick={() => router.push('/login')} className="flex-1 bg-[#ff1e6d] text-white py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-pink-500/20">Login</button>
           <button type="button" onClick={() => router.push('/register')} className="flex-1 text-zinc-500 py-2.5 rounded-xl text-sm font-bold hover:text-white transition-all">Register</button>
@@ -65,10 +65,10 @@ const LoginForm = () => {
         <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Welcome back</h2>
         <p className="text-zinc-500 mb-8 text-sm font-light italic">"Sign in to continue your reading journey."</p>
 
-        
-        <Button 
-          onClick={handleGoogleLogin} 
-          variant="outline" 
+
+        <Button
+          onClick={handleGoogleLogin}
+          variant="outline"
           className="w-full h-12 bg-black/20 border-zinc-800 hover:bg-black/40 hover:text-white text-white gap-3 rounded-2xl mb-8 font-semibold"
         >
           <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
@@ -85,11 +85,11 @@ const LoginForm = () => {
             <Label className="text-zinc-400 font-medium ml-1">Email Address</Label>
             <div className="relative">
               <Mail className="absolute left-4 top-3.5 text-zinc-600" size={18} />
-              <Input 
+              <Input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-black/20 border-zinc-800 h-12 pl-12 text-white rounded-2xl focus:border-[#ff1e6d]" 
-                placeholder="your@email.com" 
+                className="bg-black/20 border-zinc-800 h-12 pl-12 text-white rounded-2xl focus:border-[#ff1e6d]"
+                placeholder="your@email.com"
                 required
               />
             </div>
@@ -99,12 +99,12 @@ const LoginForm = () => {
             <Label className="text-zinc-400 font-medium ml-1">Password</Label>
             <div className="relative">
               <Lock className="absolute left-4 top-3.5 text-zinc-600" size={18} />
-              <Input 
+              <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-black/20 border-zinc-800 h-12 pl-12 text-white rounded-2xl focus:border-[#ff1e6d]" 
-                placeholder="••••••••" 
+                className="bg-black/20 border-zinc-800 h-12 pl-12 text-white rounded-2xl focus:border-[#ff1e6d]"
+                placeholder="••••••••"
                 required
               />
             </div>
@@ -120,12 +120,12 @@ const LoginForm = () => {
         </p>
       </div>
 
-      
+
       <div className="mt-8 p-5 bg-zinc-900/20 border border-zinc-800/50 rounded-2xl text-center max-w-[440px] w-full">
         <p className="text-zinc-500 text-[10px] font-bold mb-3 uppercase tracking-[3px]">Admin Credentials</p>
         <div className="flex justify-center gap-6 text-sm">
-           <p className="text-zinc-400 italic">Email: <span className="text-white font-mono ml-1 font-bold">admin@fable.com</span></p>
-           <p className="text-zinc-400 italic">Pass: <span className="text-white font-mono ml-1 font-bold">Admin@123</span></p>
+          <p className="text-zinc-400 italic">Email: <span className="text-white font-mono ml-1 font-bold">admin@fable.com</span></p>
+          <p className="text-zinc-400 italic">Pass: <span className="text-white font-mono ml-1 font-bold">Admin@123</span></p>
         </div>
       </div>
     </div>

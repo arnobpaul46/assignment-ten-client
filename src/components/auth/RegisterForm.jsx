@@ -22,26 +22,28 @@ const RegisterForm = () => {
   const [password, setPassword] = useState("");
 
   const handleRegister = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const toastId = toast.loading("Creating your profile...");
+  e.preventDefault();
+  setLoading(true);
+  const toastId = toast.loading("Creating your profile...");
 
-    const { data, error } = await authClient.signUp.email({
-      email,
-      password,
-      name: `${firstName} ${lastName}`,
-      image: imgUrl,
-    }, {
-      onSuccess: () => {
-        toast.success("Account created! Redirecting to login...", { id: toastId });
-        router.push('/login');
-      },
-      onError: (ctx) => {
-        toast.error(ctx.error.message || "Registration failed", { id: toastId });
-      }
-    });
-    setLoading(false);
-  };
+  const { data, error } = await authClient.signUp.email({
+    email,
+    password,
+    name: `${firstName} ${lastName}`,
+    image: imgUrl,
+    
+    role: role, 
+  }, {
+    onSuccess: () => {
+      toast.success("Account created! Redirecting to login...", { id: toastId });
+      router.push('/');
+    },
+    onError: (ctx) => {
+      toast.error(ctx.error.message || "Registration failed", { id: toastId });
+    }
+  });
+  setLoading(false);
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#09090b] py-16 px-4 font-sans">
@@ -85,7 +87,7 @@ const RegisterForm = () => {
             </div>
             <div className="space-y-1.5 text-white">
               <Label className="text-zinc-300 text-xs ml-1">Last Name</Label>
-              <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-black/30 border-zinc-800 h-12 px-5 text-white rounded-2xl focus:border-[#ff1e6d]" placeholder="Doe" required />
+              <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-black/30 border-zinc-800 h-12 px-5 text-white rounded-2xl focus:border-[#ff1e6d]" placeholder="Doe"  />
             </div>
           </div>
 

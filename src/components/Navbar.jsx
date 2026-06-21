@@ -48,7 +48,7 @@ const Navbar = () => {
         
         <div className="hidden md:flex items-center gap-10">
           <Link href="/" className="text-sm font-medium text-zinc-400 hover:text-white transition-all">Home</Link>
-          <Link href="/browse" className="text-sm font-medium text-zinc-400 hover:text-white transition-all">Browse Ebooks</Link>
+          <Link href="/browse_books" className="text-sm font-medium text-zinc-400 hover:text-white transition-all">Browse Ebooks</Link>
           <Link href="/dashboard" className="text-sm font-medium text-zinc-400 hover:text-white transition-all">Dashboard</Link>
         </div>
 
