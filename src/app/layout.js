@@ -1,21 +1,18 @@
 "use client"
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-  
-  // চেক করছি ইউজার কি ড্যাশবোর্ডে আছে?
   const isDashboard = pathname.startsWith("/dashboard");
 
   return (
-    <html lang="en">
-      <body className="bg-[#09090b] text-white antialiased suppressHydrationWarning">
-        {/* যদি ড্যাশবোর্ড না হয়, তবেই মেইন নেভবার দেখাবে */}
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-[#09090b] text-white antialiased">
+        {/* ড্যাশবোর্ডে থাকলে মেইন নেভবার দেখাবে না */}
         {!isDashboard && <Navbar />}
-        
         {children}
         <Toaster position="top-center" richColors />
       </body>

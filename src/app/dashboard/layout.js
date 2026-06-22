@@ -1,11 +1,10 @@
 "use client"
-import React, { useState } from 'react';
-
+import React from 'react';
+import { Menu, Bell } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { authClient } from "@/lib/auth-client";
 
 export default function DashboardLayout({ children }) {
-  return (
-    <div className="min-h-screen bg-[#09090b] suppressHydrationWarning">
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }
