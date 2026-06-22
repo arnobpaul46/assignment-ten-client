@@ -6,20 +6,24 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Upload, Loader2, Sparkles, BookOpen, X } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 const AddEbookTab = ({ setActiveTab }) => {
   const { data: session } = authClient.useSession();
   const [loading, setLoading] = useState(false);
-  
-  // States for Image Handling
-  const [preview, setPreview] = useState(null); 
-  const [selectedFile, setSelectedFile] = useState(null); 
+  const [preview, setPreview] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [genre, setGenre] = useState("");
 
   const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-  // আপনার দেওয়া লেটেস্ট সচল এপিআই কী
-  const IMGBB_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY; 
+  const IMGBB_KEY = "f84c3c601a3bb3ea01c47d7a5a2fdd0d";
 
-  // ইমেজ সিলেক্ট করলে যা হবে
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -30,44 +34,29 @@ const AddEbookTab = ({ setActiveTab }) => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-
-    // ভ্যালিডেশন
     if (!session?.user?.email) return toast.error("Please login first");
-    if (!selectedFile) return toast.error("Please select a cover art image");
+    if (!selectedFile) return toast.error("Select a cover image");
+    if (!genre) return toast.error("Select a genre");
 
     setLoading(true);
-    const toastId = toast.loading("Connecting to servers...");
+    const toastId = toast.loading("Publishing...");
 
     try {
-      // ১. ImgBB-তে ইমেজ আপলোড
-      toast.loading("Uploading cover art to ImgBB...", { id: toastId });
       const formData = new FormData();
       formData.append('image', selectedFile);
-
-      const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-        method: 'POST',
-        body: formData
-      });
+      const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: formData });
       const imgData = await imgRes.json();
+      if (!imgData.success) throw new Error("Upload Failed");
 
-      if (!imgData.success) {
-        throw new Error(imgData.error?.message || "ImgBB Upload Failed");
-      }
-
-      // ২. সফলভাবে আপলোড হওয়ার পর পাওয়া লিঙ্ক
-      const finalImageUrl = imgData.data.url;
-      toast.loading("Finalizing and publishing book...", { id: toastId });
-
-      // ৩. আপনার ব্যাকেন্ড ডাটাবেসে সেভ করা
       const bookInfo = {
         title: e.target.title.value,
         price: parseFloat(e.target.price.value),
-        genre: e.target.genre.value,
+        genre,
         description: e.target.description.value,
-        image: finalImageUrl, // এখানে 'finalImageUrl' ব্যবহার করা হয়েছে
+        image: imgData.data.url,
         writerEmail: session.user.email,
         writerName: session.user.name,
-        status: "Pending", // রাইটার আপলোড করলে পেন্ডিং থাকবে
+        status: "Pending",
         createdAt: new Date()
       };
 
@@ -78,79 +67,99 @@ const AddEbookTab = ({ setActiveTab }) => {
       });
 
       if (res.ok) {
-        toast.success("Ebook Published! Waiting for Admin approval.", { id: toastId });
-        setActiveTab("my-ebooks"); // সাকসেস হলে লিস্টে ফিরে যাবে
-      } else {
-        throw new Error("Failed to save to Fable database");
+        toast.success("Ebook Live!", { id: toastId });
+        if (setActiveTab) setActiveTab("my-ebooks");
       }
-
-    } catch (err) {
-      console.error(err);
-      toast.error(err.message, { id: toastId });
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { toast.error(err.message, { id: toastId }); }
+    finally { setLoading(false); }
   };
 
   return (
-    <div className="max-w-2xl animate-in fade-in duration-700 pb-20">
-      <div className="flex items-center gap-4 mb-10 text-white italic">
-         <BookOpen className="text-[#ff1e6d]" size={32} />
-         <h2 className="text-4xl font-black uppercase tracking-tighter">Writer Studio</h2>
+    <div className="max-w-3xl animate-in fade-in duration-700 pb-20">
+      <div className="flex items-center gap-5 mb-10 text-white italic">
+        <div className="bg-[#ff1e6d]/15 p-4 rounded-[22px] shadow-lg"><BookOpen className="text-[#ff1e6d]" size={30} /></div>
+        <h2 className="text-4xl font-black uppercase tracking-tighter">Writer Studio</h2>
       </div>
 
-      <form onSubmit={handleUpload} className="space-y-6 bg-[#111113] p-10 rounded-[45px] border border-zinc-800 shadow-2xl text-white">
-        
-        <div className="space-y-2">
-          <Label className="text-zinc-400 font-black text-[10px] uppercase tracking-widest ml-1">Ebook Title</Label>
-          <Input name="title" className="bg-black/40 border-zinc-800 h-14 text-white font-bold rounded-2xl focus:border-[#ff1e6d] focus:ring-0" placeholder="Title here..." required />
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label className="text-zinc-400 font-black text-[10px] uppercase tracking-widest ml-1">Price (USD)</Label>
-            <Input name="price" type="number" step="0.01" className="bg-black/40 border-zinc-800 h-14 text-[#ff1e6d] font-black text-xl rounded-2xl focus:border-[#ff1e6d]" placeholder="9.99" required />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-zinc-400 font-black text-[10px] uppercase tracking-widest ml-1">Genre</Label>
-            <Input name="genre" className="bg-black/40 border-zinc-800 h-14 text-white font-bold rounded-2xl focus:border-[#ff1e6d]" placeholder="Fantasy" required />
-          </div>
+      <form onSubmit={handleUpload} className="space-y-8 bg-[#111113] p-10 lg:p-14 rounded-[50px] border border-white/5 shadow-2xl">
+
+        {/* Title */}
+        <div className="flex flex-col gap-3">
+          <Label className="text-zinc-100 font-black text-[11px] uppercase tracking-[4px] ml-1 leading-none">Ebook Title</Label>
+          <Input name="title" className="bg-black/40 border-zinc-800 h-[64px] text-white font-bold rounded-[22px] focus:border-[#ff1e6d] focus:ring-0 text-lg" placeholder="Title here..." required />
         </div>
 
-        {/* --- Image Selection with Preview --- */}
-        <div className="space-y-2">
-          <Label className="text-zinc-400 font-black text-[10px] uppercase tracking-widest ml-1">Book Cover art</Label>
+        {/* --- PRICE & GENRE ROW (FIXED ALIGNMENT) --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+
+          {/* Price Section */}
+          <div className="flex flex-col space-y-4">
+            <Label className="text-zinc-100 font-black text-[11px] uppercase tracking-[4px] ml-1">
+              Price (USD)
+            </Label>
+            <div className="relative h-[70px]"> {/* ফিক্সড হাইট কন্টেইনার */}
+              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[#ff1e6d] font-black text-xl z-10">$</span>
+              <Input
+                name="price"
+                type="number"
+                step="0.01"
+                className="w-full h-full pl-12 bg-black/40 border-zinc-800 text-white font-black text-xl rounded-[22px] focus:border-[#ff1e6d] focus:ring-0"
+                placeholder="9.99"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Genre Section */}
+          <div className="flex flex-col space-y-4">
+            <Label className="text-zinc-100 font-black text-[11px] uppercase tracking-[4px] ml-1">
+              Select Genre
+            </Label>
+            <div > {/* ঠিক একই ফিক্সড হাইট কন্টেইনার */}
+              <Select onValueChange={setGenre}>
+                <SelectTrigger className="w-full h-full bg-black/40 border-zinc-800 text-zinc-100 font-bold rounded-[22px] focus:ring-0 focus:border-[#ff1e6d] px-6 py-8">
+                  <SelectValue placeholder="Choose Genre" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0c0c0e] border-zinc-800 text-white font-bold rounded-2xl">
+                  {["Fantasy", "Horror", "Sci-Fi", "Romance", "Mystery", "Biography"].map(g => (
+                    <SelectItem key={g} value={g} className="py-3 focus:bg-[#ff1e6d] focus:text-white cursor-pointer uppercase text-xs font-black tracking-widest">{g}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Cover Art Box */}
+        <div className="flex flex-col gap-3">
+          <Label className="text-zinc-100 font-black text-[11px] uppercase tracking-[4px] ml-1 leading-none">Cover Art</Label>
           {!preview ? (
-            <label htmlFor="book-img" className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-zinc-800 rounded-[30px] cursor-pointer hover:border-[#ff1e6d] bg-black/20 transition-all group">
-              <Upload className="text-zinc-600 mb-2 group-hover:text-[#ff1e6d] transition-colors" size={28} />
-              <span className="text-zinc-500 text-xs font-black uppercase tracking-widest">Select Cover Image</span>
+            <label htmlFor="book-img" className="flex flex-col items-center justify-center w-full h-56 border-2 border-dashed border-zinc-800 rounded-[35px] cursor-pointer hover:border-[#ff1e6d] bg-black/30 transition-all group overflow-hidden shadow-inner">
+              <Upload className="text-zinc-600 mb-2 group-hover:scale-110 transition-transform" size={28} />
+              <span className="text-zinc-500 text-[10px] font-black uppercase tracking-[3px]">Select Image</span>
               <input type="file" id="book-img" className="hidden" accept="image/*" onChange={handleImageChange} />
             </label>
           ) : (
-            <div className="relative h-64 w-full rounded-[30px] overflow-hidden border border-zinc-800 shadow-xl">
-               <img src={preview} className="w-full h-full object-cover" alt="Preview" />
-               <button 
-                type="button" 
-                onClick={() => { setPreview(null); setSelectedFile(null); }}
-                className="absolute top-4 right-4 bg-black/60 p-2 rounded-full text-white hover:bg-red-500 transition-colors"
-               >
-                 <X size={16} />
-               </button>
+            <div className="relative h-72 w-full rounded-[35px] overflow-hidden border border-zinc-800 shadow-2xl">
+              <img src={preview} className="w-full h-full object-cover" alt="Preview" />
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <button type="button" onClick={() => { setPreview(null); setSelectedFile(null); }} className="bg-red-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform">
+                  <X size={24} />
+                </button>
+              </div>
             </div>
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label className="text-zinc-400 font-black text-[10px] uppercase tracking-widest ml-1">Full Description</Label>
-          <textarea name="description" className="w-full bg-black/40 border border-zinc-800 rounded-[25px] p-6 text-white font-medium h-40 focus:border-[#ff1e6d] outline-none transition-all" placeholder="Enter book content..." required></textarea>
+        {/* Description */}
+        <div className="flex flex-col gap-3">
+          <Label className="text-zinc-100 font-black text-[11px] uppercase tracking-[4px] ml-1 leading-none">Full Description</Label>
+          <textarea name="description" className="w-full bg-black/40 border border-zinc-800 rounded-[30px] p-8 text-white font-medium h-48 focus:border-[#ff1e6d] outline-none text-lg leading-relaxed" placeholder="Tell your story..." required></textarea>
         </div>
 
-        <Button disabled={loading} className="w-full bg-[#ff1e6d] hover:bg-[#e61a62] text-white h-16 rounded-2xl font-black text-xl shadow-[0_10px_30px_rgba(255,30,109,0.3)] active:scale-95 transition-all">
-          {loading ? (
-            <div className="flex items-center gap-3 italic"><Loader2 className="animate-spin" /> Processing...</div>
-          ) : (
-            <div className="flex items-center gap-3 uppercase italic">Publish Masterpiece <Sparkles size={20} /></div>
-          )}
+        <Button disabled={loading} className="w-full bg-[#ff1e6d] hover:bg-[#e61a62] text-white h-[80px] rounded-[25px] font-black text-2xl shadow-[0_15px_40px_rgba(255,30,109,0.3)] active:scale-95 transition-all">
+          {loading ? <Loader2 className="animate-spin mx-auto" /> : "Publish masterpiece"}
         </Button>
       </form>
     </div>

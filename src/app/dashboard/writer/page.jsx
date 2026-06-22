@@ -1,22 +1,26 @@
 "use client"
-import React, { useState } from 'react';
-import Sidebar from "@/components/dashboard/Sidebar";
+import React from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import MyEbooksTab from "@/components/writer/MyEbooksTab";
 import AddEbookTab from "@/components/writer/AddEbookTab";
 import SalesHistoryTab from "@/components/writer/SalesHistoryTab";
+import WriterProfileTab from "@/components/writer/WriterProfileTab";
 
-const WriterPage = () => {
-  const [activeTab, setActiveTab] = useState("my-ebooks");
+export default function WriterDashboard() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const activeTab = searchParams.get("tab") || "my-ebooks";
+
+  const setActiveTab = (tab) => {
+    router.push(`/dashboard/writer?tab=${tab}`);
+  };
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="hidden lg:block w-72 h-screen sticky top-0"><Sidebar activeTab={activeTab} setActiveTab={setActiveTab} role="writer" /></aside>
-      <div className="flex-1">
+    <div className="max-w-[1200px] mx-auto animate-in fade-in duration-500">
         {activeTab === "my-ebooks" && <MyEbooksTab setActiveTab={setActiveTab} />}
         {activeTab === "add-ebook" && <AddEbookTab setActiveTab={setActiveTab} />}
         {activeTab === "sales" && <SalesHistoryTab />}
-      </div>
+        {activeTab === "profile" && <WriterProfileTab setActiveTab={setActiveTab} />}
     </div>
   );
-};
-export default WriterPage;
+}
