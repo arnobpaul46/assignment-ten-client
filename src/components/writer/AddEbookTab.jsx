@@ -22,7 +22,7 @@ const AddEbookTab = ({ setActiveTab }) => {
   const [genre, setGenre] = useState("");
 
   const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-  const IMGBB_KEY = "f84c3c601a3bb3ea01c47d7a5a2fdd0d";
+  const IMGBB_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -34,25 +34,40 @@ const AddEbookTab = ({ setActiveTab }) => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
+    
+    // ১. ভ্যালিডেশন চেক
     if (!session?.user?.email) return toast.error("Please login first");
     if (!selectedFile) return toast.error("Select a cover image");
     if (!genre) return toast.error("Select a genre");
 
     setLoading(true);
-    const toastId = toast.loading("Publishing...");
+    const toastId = toast.loading("Publishing masterpiece...");
 
     try {
-      const formData = new FormData();
-      formData.append('image', selectedFile);
-      const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: formData });
-      const imgData = await imgRes.json();
-      if (!imgData.success) throw new Error("Upload Failed");
+      // ২. Form থেকে ডেটা নেওয়া (Safe Method)
+      const formDataObj = new FormData(e.currentTarget);
+      const title = formDataObj.get('title');
+      const price = formDataObj.get('price');
+      const description = formDataObj.get('description');
 
+      // ৩. ImgBB ইমেজ আপলোড
+      const imgFormData = new FormData();
+      imgFormData.append('image', selectedFile);
+      
+      const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { 
+        method: 'POST', 
+        body: imgFormData 
+      });
+      const imgData = await imgRes.json();
+      
+      if (!imgData.success) throw new Error("Image Upload Failed");
+
+      // ৪. ব্যাকেন্ড ডাটাবেসে সেভ করা
       const bookInfo = {
-        title: e.target.title.value,
-        price: parseFloat(e.target.price.value),
-        genre,
-        description: e.target.description.value,
+        title,
+        price: parseFloat(price),
+        genre, // স্টেট থেকে নেওয়া জেনরা
+        description,
         image: imgData.data.url,
         writerEmail: session.user.email,
         writerName: session.user.name,
@@ -69,9 +84,15 @@ const AddEbookTab = ({ setActiveTab }) => {
       if (res.ok) {
         toast.success("Ebook Live!", { id: toastId });
         if (setActiveTab) setActiveTab("my-ebooks");
+      } else {
+        throw new Error("Failed to save to database");
       }
-    } catch (err) { toast.error(err.message, { id: toastId }); }
-    finally { setLoading(false); }
+    } catch (err) { 
+      console.error(err);
+      toast.error(err.message, { id: toastId }); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   return (
@@ -86,10 +107,10 @@ const AddEbookTab = ({ setActiveTab }) => {
         {/* Title */}
         <div className="flex flex-col gap-3">
           <Label className="text-zinc-100 font-black text-[11px] uppercase tracking-[4px] ml-1 leading-none">Ebook Title</Label>
-          <Input name="title" className="bg-black/40 border-zinc-800 h-[64px] text-white font-bold rounded-[22px] focus:border-[#ff1e6d] focus:ring-0 text-lg" placeholder="Title here..." required />
+          <Input name="title" className="bg-black/40 border-zinc-800 h-[70px] text-white font-bold rounded-[22px] focus:border-[#ff1e6d] focus:ring-0 text-lg" placeholder="Title here..." required />
         </div>
 
-        {/* --- PRICE & GENRE ROW (FIXED ALIGNMENT) --- */}
+        {/* --- PRICE & GENRE ROW (EXACT SAME LEVEL FIXED) --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
 
           {/* Price Section */}
@@ -97,7 +118,7 @@ const AddEbookTab = ({ setActiveTab }) => {
             <Label className="text-zinc-100 font-black text-[11px] uppercase tracking-[4px] ml-1">
               Price (USD)
             </Label>
-            <div className="relative h-[70px]"> {/* ফিক্সড হাইট কন্টেইনার */}
+            <div className="relative h-[70px]"> 
               <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[#ff1e6d] font-black text-xl z-10">$</span>
               <Input
                 name="price"
@@ -115,9 +136,9 @@ const AddEbookTab = ({ setActiveTab }) => {
             <Label className="text-zinc-100 font-black text-[11px] uppercase tracking-[4px] ml-1">
               Select Genre
             </Label>
-            <div > {/* ঠিক একই ফিক্সড হাইট কন্টেইনার */}
+            <div className="h-[70px]"> 
               <Select onValueChange={setGenre}>
-                <SelectTrigger className="w-full h-full bg-black/40 border-zinc-800 text-zinc-100 font-bold rounded-[22px] focus:ring-0 focus:border-[#ff1e6d] px-6 py-8">
+                <SelectTrigger className="w-full h-full bg-black/40 border-zinc-800 text-zinc-100  font-bold rounded-[22px] focus:ring-0 focus:border-[#ff1e6d] px-6 py-8.5">
                   <SelectValue placeholder="Choose Genre" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0c0c0e] border-zinc-800 text-white font-bold rounded-2xl">
@@ -159,7 +180,7 @@ const AddEbookTab = ({ setActiveTab }) => {
         </div>
 
         <Button disabled={loading} className="w-full bg-[#ff1e6d] hover:bg-[#e61a62] text-white h-[80px] rounded-[25px] font-black text-2xl shadow-[0_15px_40px_rgba(255,30,109,0.3)] active:scale-95 transition-all">
-          {loading ? <Loader2 className="animate-spin mx-auto" /> : "Publish masterpiece"}
+          {loading ? <div className="flex items-center gap-3"><Loader2 className="animate-spin" /> Publishing...</div> : "Publish masterpiece"}
         </Button>
       </form>
     </div>
