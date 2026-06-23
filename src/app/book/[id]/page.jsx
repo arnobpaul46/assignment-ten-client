@@ -41,32 +41,34 @@ const BookDetailsPage = () => {
         fetchData();
     }, [id, session, SERVER_URL]);
 
-    // handlePurchase ফাংশনের ভেতরে এই পরিবর্তনটুকু করুন:
+    // handlePurchase
     const handlePurchase = async () => {
         if (!session) return router.push('/login');
-        const toastId = toast.loading("Processing transaction...");
+
+        const toastId = toast.loading("Opening secure payment gateway...");
 
         try {
-            const res = await fetch(`${SERVER_URL}/api/reader/purchase`, {
+            const res = await fetch(`${SERVER_URL}/api/create-checkout-session`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    bookId: book._id,
+                    book: book,
                     userEmail: session.user.email,
-                    userName: session.user.name,
-                    title: book.title,
-                    image: book.image,
-                    price: book.price,
-                    writerName: book.writerName,
-                    writerEmail: book.writerEmail, // এটি যোগ করা হলো যাতে রাইটার ডাটা পায়
-                    date: new Date()
+                    userName: session.user.name
                 })
             });
-            if (res.ok) {
-                toast.success("Success! Redirecting...", { id: toastId });
-                setTimeout(() => router.push('/dashboard/reader'), 1500);
+
+            const data = await res.json();
+
+            if (data.url) {
+                
+                window.location.href = data.url;
+            } else {
+                throw new Error("Payment session failed");
             }
-        } catch (err) { toast.error("Transaction failed"); }
+        } catch (err) {
+            toast.error("Could not initiate payment", { id: toastId });
+        }
     };
 
     const handleBookmark = async () => {
@@ -135,8 +137,8 @@ const BookDetailsPage = () => {
                             <button
                                 onClick={handleBookmark}
                                 className={`h-16 lg:h-20 w-16 lg:w-20 rounded-[25px] flex items-center justify-center border transition-all ${isBookmarked
-                                        ? "bg-[#ff1e6d] border-[#ff1e6d] text-white shadow-[0_10px_20px_rgba(255,30,109,0.2)]"
-                                        : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:text-[#ff1e6d] hover:border-[#ff1e6d]/40"
+                                    ? "bg-[#ff1e6d] border-[#ff1e6d] text-white shadow-[0_10px_20px_rgba(255,30,109,0.2)]"
+                                    : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:text-[#ff1e6d] hover:border-[#ff1e6d]/40"
                                     }`}
                             >
                                 <Bookmark size={30} fill={isBookmarked ? "white" : "none"} />
