@@ -11,7 +11,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const activeTab = searchParams.get("tab") || "analytics";
 
-  // ট্যাব পরিবর্তনের ফাংশন
+  
   const setActiveTab = (tab) => {
     router.push(`/dashboard/admin?tab=${tab}`);
   };
