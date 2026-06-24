@@ -8,16 +8,10 @@ import TransactionsTab from "@/components/admin/TransactionsTab";
 
 export default function AdminDashboard() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const activeTab = searchParams.get("tab") || "analytics";
 
-  
-  const setActiveTab = (tab) => {
-    router.push(`/dashboard/admin?tab=${tab}`);
-  };
-
   return (
-    <div className="max-w-[1400px] mx-auto animate-in fade-in duration-500">
+    <div className="max-w-[1400px] mx-auto animate-in fade-in duration-500 pb-10">
         {activeTab === "analytics" && <AnalyticsTab />}
         {activeTab === "manage-users" && <UsersTab />}
         {activeTab === "all-ebooks" && <EbooksTab />}
