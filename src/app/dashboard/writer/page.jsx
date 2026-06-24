@@ -16,7 +16,7 @@ export default function WriterDashboard() {
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto animate-in fade-in duration-500">
+    <div className="max-w-[1200px] mx-auto animate-in fade-in duration-500 pb-10">
         {activeTab === "my-ebooks" && <MyEbooksTab setActiveTab={setActiveTab} />}
         {activeTab === "add-ebook" && <AddEbookTab setActiveTab={setActiveTab} />}
         {activeTab === "sales" && <SalesHistoryTab />}
