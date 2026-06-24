@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="bg-[#09090b] text-white antialiased">
-        {/* ড্যাশবোর্ডে থাকলে মেইন নেভবার দেখাবে না */}
+        
         {!isDashboard && <Navbar />}
         {children}
         <Toaster position="top-center" richColors />
