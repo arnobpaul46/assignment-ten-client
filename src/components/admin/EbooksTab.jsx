@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, AlertTriangle, Loader2, BookImage } from "lucide-react"; // BookImage যোগ করা হয়েছে
+import { Trash2, AlertTriangle, Loader2, BookImage } from "lucide-react"; 
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 

@@ -4,7 +4,7 @@ import { authClient } from "@/lib/auth-client";
 import { Trash2, Play, BookText, ArrowRight, Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link'; // এই ইমপোর্টটি মিসিং ছিল
+import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const PurchasedEbooksTab = () => {
@@ -13,28 +13,22 @@ const PurchasedEbooksTab = () => {
   const [deleteId, setDeleteId] = useState(null);
   const { data: session } = authClient.useSession();
   const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-  
   const router = useRouter();
   const searchParams = useSearchParams();
   const purchaseStatus = searchParams.get('purchase');
   const sessionId = searchParams.get('session_id');
 
-  // লাইব্রেরি ডাটা ফেচ করার ফাংশন
   const fetchLibrary = async () => {
     if (!session?.user?.email) return;
     try {
       const res = await fetch(`${SERVER_URL}/api/reader/my-library/${session.user.email}`);
       const data = await res.json();
       setBooks(data);
-    } catch (err) {
-      console.error("Library fetch error:", err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); } 
+    finally { setLoading(false); }
   };
 
   useEffect(() => {
-    // --- পেমেন্ট ভেরিফিকেশন এবং ডাটাবেসে সেভ করা ---
     if (purchaseStatus === 'success' && sessionId && session?.user?.email) {
       const verifyAndSave = async () => {
         const toastId = toast.loading("Verifying your payment...");
@@ -44,90 +38,63 @@ const PurchasedEbooksTab = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId })
           });
-          
           if (res.ok) {
-            toast.success("Payment Confirmed! Book added to library.", { id: toastId });
-            // ইউআরএল ক্লিন করা
+            toast.success("Purchase Confirmed!", { id: toastId });
             router.replace('/dashboard/reader?tab=my-library');
             fetchLibrary();
-          } else {
-            toast.error("Payment verification failed.", { id: toastId });
-            fetchLibrary();
           }
-        } catch (err) { 
-          toast.error("Error connecting to server", { id: toastId }); 
-          fetchLibrary();
-        }
+        } catch (err) { toast.error("Verification failed"); }
       };
       verifyAndSave();
-    } else {
-      fetchLibrary();
-    }
-  }, [purchaseStatus, sessionId, session, SERVER_URL]);
+    } else { fetchLibrary(); }
+  }, [purchaseStatus, sessionId, session]);
 
   const confirmRemove = async () => {
-    if (!deleteId) return;
-    const toastId = toast.loading("Removing book...");
-    try {
-      const res = await fetch(`${SERVER_URL}/api/reader/delete-purchase/${deleteId}`, { method: 'DELETE' });
-      if (res.ok) {
-        toast.success("Book removed", { id: toastId });
-        setBooks(books.filter(b => b._id !== deleteId));
-        setDeleteId(null);
-      }
-    } catch (err) { toast.error("Error deleting book", { id: toastId }); }
+    const res = await fetch(`${SERVER_URL}/api/reader/delete-purchase/${deleteId}`, { method: 'DELETE' });
+    if (res.ok) {
+      toast.success("Removed from library");
+      setBooks(books.filter(b => b._id !== deleteId));
+      setDeleteId(null);
+    }
   };
-
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#ff1e6d]" size={40} /></div>;
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
-      <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none">My <span className="text-[#ff1e6d]">Library</span></h2>
+      <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none px-2">My <span className="text-[#ff1e6d]">Library</span></h2>
 
-      {books.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+           {[1,2,3,4,5].map(i => <div key={i} className="aspect-[3/4.5] bg-zinc-900 rounded-[30px] animate-pulse"></div>)}
+        </div>
+      ) : books.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 bg-[#111113]/50 border-2 border-dashed border-zinc-800 rounded-[45px] text-center">
           <BookText size={40} className="text-[#ff1e6d] mb-6" />
-          <h3 className="text-2xl font-black text-white italic uppercase mb-2">Library is Empty</h3>
-          <p className="text-zinc-500 font-bold italic mb-8">Start your journey by purchasing an ebook!</p>
-          <Link href="/browse_books">
-            <button className="bg-[#ff1e6d] text-white px-10 py-4 rounded-[22px] font-black text-xs uppercase shadow-lg shadow-pink-500/20 active:scale-95 transition-all flex items-center gap-3">
-              Browse Books <ArrowRight size={16} />
-            </button>
-          </Link>
+          <h3 className="text-2xl font-black text-white italic uppercase">No books owned</h3>
+          <button onClick={() => router.push('/browse_books')} className="bg-[#ff1e6d] text-white px-10 py-4 rounded-[22px] font-black text-xs uppercase mt-10 flex items-center gap-3">Browse Books <ArrowRight size={16} /></button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 lg:gap-8">
           {books.map(book => (
             <div key={book._id} className="group relative">
-              <div className="aspect-[3/4.5] rounded-[30px] overflow-hidden border border-zinc-800 shadow-2xl relative">
+              <div className="aspect-[3/4.5] rounded-[28px] md:rounded-[35px] overflow-hidden border border-zinc-800 shadow-2xl relative">
                 <img src={book.image} className="w-full h-full object-cover transition-all group-hover:scale-110 duration-700" alt="" />
-                
-                {/* ডিলিট বাটন */}
-                <button onClick={() => setDeleteId(book._id)} className="absolute top-3 right-3 bg-black/60 hover:bg-red-600 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 z-20 transition-all shadow-xl"><Trash2 size={14} /></button>
-                
-                {/* ক্লিক করলে বইয়ের ডিটেইলস পেজে নিয়ে যাবে */}
+                <button onClick={() => setDeleteId(book._id)} className="absolute top-3 right-3 bg-black/60 hover:bg-red-600 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 z-20 transition-all"><Trash2 size={14} /></button>
                 <Link href={`/book/${book.bookId}`} className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center cursor-pointer">
-                    <div className="bg-[#ff1e6d] p-4 rounded-full shadow-2xl shadow-pink-500/50 scale-75 group-hover:scale-100 transition-all"><Play fill="white" size={24} /></div>
+                    <div className="bg-[#ff1e6d] p-4 rounded-full scale-75 group-hover:scale-100 transition-all shadow-pink-500/50 shadow-2xl"><Play fill="white" size={20} /></div>
                 </Link>
               </div>
-              <h4 className="mt-4 text-white font-bold text-sm italic truncate">"{book.title}"</h4>
+              <h4 className="mt-4 text-white font-bold text-sm italic truncate px-1">"{book.title}"</h4>
             </div>
           ))}
         </div>
       )}
 
-      {/* --- DELETE MODAL --- */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="bg-[#0c0c0e] border-zinc-800 text-white rounded-[30px] p-8 max-w-sm text-center">
-          <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
-             <AlertTriangle className="text-red-500" size={32} />
-          </div>
-          <DialogTitle className="text-xl font-black uppercase italic">Remove from Library?</DialogTitle>
-          <DialogDescription className="text-zinc-500 mt-2 text-sm leading-relaxed">
-            You will lose access to read this book from your library.
-          </DialogDescription>
+          <AlertTriangle className="text-red-500 mx-auto mb-4" size={40} />
+          <DialogTitle className="text-xl font-black uppercase tracking-tighter">Remove from Library?</DialogTitle>
           <div className="flex gap-3 mt-8">
-            <button onClick={() => setDeleteId(null)} className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl h-12 font-bold text-xs uppercase text-zinc-400">Cancel</button>
+            <button onClick={() => setDeleteId(null)} className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl h-12 font-bold text-xs uppercase text-zinc-500">Cancel</button>
             <button onClick={confirmRemove} className="flex-1 bg-red-600 rounded-xl h-12 font-black text-xs uppercase shadow-lg shadow-red-600/20 active:scale-95">Remove</button>
           </div>
         </DialogContent>
@@ -135,5 +102,4 @@ const PurchasedEbooksTab = () => {
     </div>
   );
 };
-
 export default PurchasedEbooksTab;
