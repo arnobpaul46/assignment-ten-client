@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion'; 
+import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, BookOpen, Star, Play, ArrowRight, Flame, Compass, Heart, Zap, Ghost } from 'lucide-react';
 import { Inter_Tight } from 'next/font/google';
 
-const interTight = Inter_Tight({ 
-  subsets: ['latin'], 
-  weight: ['400', '500', '700', '800', '900'],
-  style: ['normal', 'italic'] 
+const interTight = Inter_Tight({
+    subsets: ['latin'],
+    weight: ['400', '500', '700', '800', '900'],
+    style: ['normal', 'italic']
 });
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
@@ -146,7 +146,7 @@ const HomePage = () => {
                                 <h4 className="text-white font-bold text-[11px] truncate px-2 italic uppercase mb-1 leading-none">"{book.title}"</h4>
                                 <div className="flex items-center justify-between mt-4 px-2 pb-1">
                                     <p className="text-[#ff1e6d] font-black text-xs italic leading-none">${book.price}</p>
-                                    <Link href={`/book/${book._id}`}><button className="h-7 w-7 bg-zinc-900 border border-zinc-800 text-white hover:bg-[#ff1e6d] rounded-lg flex items-center justify-center transition-all shadow-xl"><ShoppingBag size={12}/></button></Link>
+                                    <Link href={`/book/${book._id}`}><button className="h-7 w-7 bg-zinc-900 border border-zinc-800 text-white hover:bg-[#ff1e6d] rounded-lg flex items-center justify-center transition-all shadow-xl"><ShoppingBag size={12} /></button></Link>
                                 </div>
                             </motion.div>
                         ))}
@@ -154,14 +154,15 @@ const HomePage = () => {
                 </section>
 
                 {/* --- ৩. TOP WRITERS --- */}
+                
                 <section className="py-24 border-t border-zinc-800/50 text-center">
-                    <h2 className="text-4xl font-black italic uppercase tracking-tighter mb-20 inline-block border-b-4 border-[#ff1e6d] px-8 py-2">
+                    <h2 className="text-4xl lg:text-5xl font-black italic uppercase tracking-tighter mb-20 inline-block px-8 py-2 border-b-4 border-[#ff1e6d] text-white">
                         Top <span className="text-[#ff1e6d]">Writers</span>
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                         {topWriters.map((writer, i) => (
                             <div key={i} className="bg-[#111113] p-10 rounded-[50px] border border-white/5 flex items-center gap-8 shadow-2xl hover:border-[#ff1e6d]/40 transition-all group">
-                                <img src={writer.image || "https://via.placeholder.com/100"} className="h-20 w-20 rounded-3xl border-2 border-[#ff1e6d] p-1 shadow-lg shadow-pink-500/10 group-hover:scale-105 transition-transform" alt="" />
+                                <img src={writer.image || "https://via.placeholder.com/100"} className="h-24 w-24 rounded-[35px] border-4 border-[#ff1e6d] p-1 shadow-lg shadow-pink-500/20 group-hover:scale-105 transition-transform object-cover" alt="" />
                                 <div className="text-left">
                                     <h4 className="text-white font-black text-2xl italic tracking-tighter leading-none uppercase">{writer.name}</h4>
                                     <p className="text-[#ff1e6d] text-[10px] font-black uppercase tracking-widest mt-3 flex items-center gap-2 italic"><Star size={14} fill="#ff1e6d" /> {writer.salesCount} Sales</p>
@@ -176,8 +177,8 @@ const HomePage = () => {
                     <h2 className="text-3xl lg:text-4xl font-black italic uppercase tracking-tighter mb-20 leading-none text-center">Browse by <span className="text-[#ff1e6d]">Genre</span></h2>
                     <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
                         {[
-                            {n: "Fantasy", i: Flame}, {n: "Mystery", i: Compass}, {n: "Romance", i: Heart}, 
-                            {n: "Sci-Fi", i: Zap}, {n: "Horror", i: Ghost}, {n: "Biography", i: BookOpen}
+                            { n: "Fantasy", i: Flame }, { n: "Mystery", i: Compass }, { n: "Romance", i: Heart },
+                            { n: "Sci-Fi", i: Zap }, { n: "Horror", i: Ghost }, { n: "Biography", i: BookOpen }
                         ].map((g) => (
                             <Link key={g.n} href={`/browse_books?genre=${g.n}`} className="bg-[#111113] border border-white/5 h-44 rounded-[45px] flex flex-col items-center justify-center gap-5 hover:bg-[#ff1e6d] group transition-all duration-500 shadow-2xl">
                                 <div className="h-14 w-14 bg-zinc-900 rounded-[20px] flex items-center justify-center group-hover:bg-white/20 transition-all shadow-inner border border-white/5"><g.i size={28} className="group-hover:text-white text-zinc-500 transition-colors" /></div>
@@ -198,11 +199,11 @@ const HomePage = () => {
                             <p className="text-zinc-500 text-sm leading-relaxed italic pr-12 font-medium opacity-70">"Fable is a premium dark-mode platform connecting independent writers with curious readers across the globe."</p>
                             <div className="flex gap-8 text-zinc-600">
                                 {/* X (Twitter) */}
-                                <svg className="w-5 h-5 hover:text-[#ff1e6d] cursor-pointer transition-all" fill="currentColor" viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.932zm-1.292 19.49h2.039L6.486 3.24H4.298l13.311 17.403z"/></svg>
+                                <svg className="w-5 h-5 hover:text-[#ff1e6d] cursor-pointer transition-all" fill="currentColor" viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.932zm-1.292 19.49h2.039L6.486 3.24H4.298l13.311 17.403z" /></svg>
                                 {/* Instagram */}
-                                <svg className="w-5 h-5 hover:text-[#ff1e6d] cursor-pointer transition-all" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.719.059 1.178.069 1.51.069 4.75s-.01 3.572-.069 4.75c-.149 3.022-1.667 4.571-4.919 4.719-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.249-.148-4.771-1.699-4.919-4.72-.058-1.177-.069-1.51-.069-4.75s.01-3.572.069-4.75c.15-3.021 1.667-4.57 4.919-4.719 1.266-.058 1.645-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.28-.058-1.688-.072-4.947-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                <svg className="w-5 h-5 hover:text-[#ff1e6d] cursor-pointer transition-all" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.719.059 1.178.069 1.51.069 4.75s-.01 3.572-.069 4.75c-.149 3.022-1.667 4.571-4.919 4.719-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.249-.148-4.771-1.699-4.919-4.72-.058-1.177-.069-1.51-.069-4.75s.01-3.572.069-4.75c.15-3.021 1.667-4.57 4.919-4.719 1.266-.058 1.645-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.28-.058-1.688-.072-4.947-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg>
                                 {/* Github */}
-                                <svg className="w-5 h-5 hover:text-[#ff1e6d] cursor-pointer transition-all" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                                <svg className="w-5 h-5 hover:text-[#ff1e6d] cursor-pointer transition-all" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" /></svg>
                             </div>
                         </div>
                         <div>
