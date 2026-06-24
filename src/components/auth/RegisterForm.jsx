@@ -8,6 +8,9 @@ import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import Cookies from 'js-cookie'; // কুকি ইমপোর্ট
+
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -22,28 +25,44 @@ const RegisterForm = () => {
   const [password, setPassword] = useState("");
 
   const handleRegister = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  const toastId = toast.loading("Creating your profile...");
+    e.preventDefault();
+    setLoading(true);
+    const toastId = toast.loading("Creating your profile...");
 
-  const { data, error } = await authClient.signUp.email({
-    email,
-    password,
-    name: `${firstName} ${lastName}`,
-    image: imgUrl,
-    
-    role: role, 
-  }, {
-    onSuccess: () => {
-      toast.success("Account created! Redirecting to login...", { id: toastId });
-      router.push('/');
-    },
-    onError: (ctx) => {
-      toast.error(ctx.error.message || "Registration failed", { id: toastId });
-    }
-  });
-  setLoading(false);
-};
+    const { data, error } = await authClient.signUp.email({
+      email,
+      password,
+      name: `${firstName} ${lastName}`,
+      image: imgUrl,
+      role: role, 
+    }, {
+      onSuccess: async (ctx) => {
+        // --- JWT & Cookies Logic ---
+        const loggedUser = { email: ctx.data.user.email };
+        const response = await fetch(`${SERVER_URL}/api/jwt`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(loggedUser)
+        });
+        const jwtData = await response.json();
+        if (jwtData.token) {
+          Cookies.set('access-token', jwtData.token, { expires: 7 });
+        }
+
+        toast.success("Account created successfully!", { id: toastId });
+        
+        // রোল অনুযায়ী রিডাইরেক্ট
+        if (role === "writer") router.push('/dashboard/writer');
+        else router.push('/dashboard/reader');
+        
+        router.refresh();
+      },
+      onError: (ctx) => {
+        toast.error(ctx.error.message || "Registration failed", { id: toastId });
+      }
+    });
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#09090b] py-16 px-4 font-sans">

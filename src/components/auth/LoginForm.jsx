@@ -8,6 +8,9 @@ import { useRouter } from 'next/navigation';
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import Link from 'next/link';
+import Cookies from 'js-cookie'; // কুকি ইমপোর্ট
+
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const LoginForm = () => {
   const router = useRouter();
@@ -15,38 +18,73 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-
-  // src/components/auth/LoginForm.jsx এর handleLogin ফাংশনটি এভাবে আপডেট করুন
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const toastId = toast.loading("Verifying credentials..."); // এটি আইডি রিটার্ন করে
+  e.preventDefault();
+  setLoading(true);
+  
+  // ১. এই আইডিটি মনে রাখতে হবে
+  const toastId = toast.loading("Verifying credentials..."); 
 
-    try {
-      await authClient.signIn.email({ email, password }, {
-        onSuccess: (ctx) => {
-          toast.success("Welcome back!", { id: toastId }); // এখানে ঐ আইডি দিয়ে আপডেট করতে হবে
-          // রিডাইরেক্ট লজিক...
-          router.push('/dashboard');
-          router.refresh();
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message || "Login failed", { id: toastId }); // ভুল হলে এটি মেসেজ দিবে
+  try {
+    await authClient.signIn.email({ email, password }, {
+      onSuccess: async (ctx) => {
+        // ২. সাকসেস হলে ঐ নির্দিষ্ট আইডিকে আপডেট করতে হবে
+        toast.success("Login Successful!", { id: toastId });
+
+        const loggedUser = { email: ctx.data.user.email };
+        const response = await fetch(`${SERVER_URL}/api/jwt`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(loggedUser)
+        });
+        const data = await response.json();
+        if (data.token) {
+          Cookies.set('access-token', data.token, { expires: 7 });
         }
-      });
-    } catch (err) {
-      toast.dismiss(toastId); // যেকোনো এররে এটি বন্ধ হয়ে যাবে
-    } finally {
-      setLoading(false);
-    }
-  };
+
+        const role = ctx.data.user.role || "reader";
+        if (email === "admin@fable.com" || role === "admin") {
+          router.push('/dashboard/admin');
+        } else if (role === "writer") {
+          router.push('/dashboard/writer');
+        } else {
+          router.push('/dashboard/reader');
+        }
+        router.refresh();
+      },
+      onError: (ctx) => {
+        // ৩. ভুল হলে টোস্ট মেসেজ আপডেট হবে
+        toast.error(ctx.error.message || "Invalid email or password", { id: toastId });
+        setLoading(false);
+      }
+    });
+  } catch (err) {
+    // ৪. হুট করে ক্রাশ করলে টোস্ট পুরোপুরি বন্ধ হয়ে যাবে
+    toast.dismiss(toastId);
+    setLoading(false);
+  }
+};
 
 
   const handleGoogleLogin = async () => {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "/dashboard",
+      }, {
+        onSuccess: async (ctx) => {
+
+          const loggedUser = { email: ctx.data.user.email };
+          const response = await fetch(`${SERVER_URL}/api/jwt`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loggedUser)
+          });
+          const data = await response.json();
+          if (data.token) {
+            Cookies.set('access-token', data.token, { expires: 7 });
+          }
+        }
       });
     } catch (err) {
       toast.error("Google login failed");
@@ -110,7 +148,7 @@ const LoginForm = () => {
             </div>
           </div>
 
-          <Button disabled={loading} type="submit" className="w-full h-14 bg-[#ff1e6d] hover:bg-[#e61a62] text-white rounded-2xl font-bold text-lg mt-4 shadow-lg shadow-pink-500/10 flex gap-2">
+          <Button disabled={loading} type="submit" className="w-full h-14 bg-[#ff1e6d] hover:bg-[#e61a62] text-white rounded-2xl font-bold text-lg mt-4 shadow-lg shadow-pink-500/20 active:scale-95 transition-all">
             {loading ? <Loader2 className="animate-spin" /> : "Sign In to Fable"} <ArrowRight size={20} />
           </Button>
         </form>

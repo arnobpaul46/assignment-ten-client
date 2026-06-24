@@ -1,7 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DollarSign } from "lucide-react";
+import { DollarSign, Loader2 } from "lucide-react";
+import Cookies from 'js-cookie';
 
 const TransactionsTab = () => {
   const [transactions, setTransactions] = useState([]);
@@ -9,19 +10,21 @@ const TransactionsTab = () => {
   const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
   useEffect(() => {
-    fetch(`${SERVER_URL}/api/admin/transactions`)
+    const token = Cookies.get('access-token');
+    fetch(`${SERVER_URL}/api/admin/transactions`, { headers: { authorization: `Bearer ${token}` } })
       .then(res => res.json())
-      .then(data => { setTransactions(data); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [SERVER_URL]);
+      .then(data => { setTransactions(data); setLoading(false); });
+  }, []);
+
+  if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#ff1e6d]" size={40} /></div>;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex justify-between items-center px-2">
-        <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter uppercase leading-none">Global <span className="text-[#ff1e6d]">Transactions</span></h2>
-        <div className="bg-[#ff1e6d]/10 border border-[#ff1e6d]/20 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-xl">
-           <DollarSign className="text-[#ff1e6d]" size={20} />
-           <span className="text-white font-black text-sm md:text-lg italic">${transactions.reduce((acc, curr) => acc + curr.price, 0).toFixed(2)} Total Revenue</span>
+        <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none">Global <span className="text-[#ff1e6d]">Transactions</span></h2>
+        <div className="bg-[#111113] border border-[#ff1e6d]/20 px-6 py-4 rounded-3xl flex items-center gap-4 shadow-xl">
+           <div className="bg-[#ff1e6d] p-2 rounded-lg text-white"><DollarSign size={20} /></div>
+           <div><p className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest leading-none mb-1">Total Revenue</p><h4 className="text-2xl font-black text-white leading-none italic">${transactions.reduce((acc, curr) => acc + curr.price, 0).toFixed(2)}</h4></div>
         </div>
       </div>
 
@@ -36,17 +39,16 @@ const TransactionsTab = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading ? (
-                [1,2,3,4].map(i => <TableRow key={i} className="animate-pulse"><TableCell colSpan={3} className="h-20 bg-zinc-900/10"></TableCell></TableRow>)
-              ) : (
-                transactions.map((tx) => (
-                  <tr key={tx._id} className="border-b border-zinc-800/50 hover:bg-white/[0.02] transition-all">
-                    <td className="px-10 py-6 font-mono text-zinc-400 text-xs">{tx.userEmail}</td>
-                    <td className="text-center font-bold text-white italic text-base">"{tx.title}"</td>
-                    <td className="text-right px-10"><p className="text-green-500 font-black text-xl leading-none">+${tx.price}</p><p className="text-[9px] text-zinc-600 font-bold uppercase mt-1">{new Date(tx.date).toLocaleDateString()}</p></td>
-                  </tr>
-                ))
-              )}
+              {transactions.map((tx) => (
+                <tr key={tx._id} className="border-b border-zinc-800/50 hover:bg-white/[0.02] transition-all">
+                  <td className="px-10 py-6 font-mono text-zinc-400 text-xs">{tx.userEmail}</td>
+                  <td className="text-center font-bold text-white italic text-base uppercase">"{tx.title}"</td>
+                  <td className="text-right px-10">
+                    <p className="text-green-500 font-black text-xl leading-none italic">+${tx.price}</p>
+                    <p className="text-[9px] text-zinc-600 font-bold uppercase mt-1">{new Date(tx.date).toLocaleDateString()}</p>
+                  </td>
+                </tr>
+              ))}
             </TableBody>
           </Table>
         </div>
