@@ -7,6 +7,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Cookies from 'js-cookie';
 
 const Sidebar = ({ role }) => {
   const searchParams = useSearchParams();
@@ -23,6 +24,7 @@ const Sidebar = ({ role }) => {
       { id: "my-ebooks", label: "My Ebooks", icon: BookText },
       { id: "add-ebook", label: "Publish Book", icon: PlusCircle },
       { id: "sales", label: "Sales History", icon: CreditCard },
+      { id: "bookmarks", label: "Bookmarks", icon: Heart },
       { id: "profile", label: "Profile Settings", icon: User },
     ],
     reader: [

@@ -19,60 +19,17 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  
-  // ১. এই আইডিটি মনে রাখতে হবে
-  const toastId = toast.loading("Verifying credentials..."); 
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    await authClient.signIn.email({ email, password }, {
-      onSuccess: async (ctx) => {
-        // ২. সাকসেস হলে ঐ নির্দিষ্ট আইডিকে আপডেট করতে হবে
-        toast.success("Login Successful!", { id: toastId });
+    // ১. এই আইডিটি মনে রাখতে হবে
+    const toastId = toast.loading("Verifying credentials...");
 
-        const loggedUser = { email: ctx.data.user.email };
-        const response = await fetch(`${SERVER_URL}/api/jwt`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(loggedUser)
-        });
-        const data = await response.json();
-        if (data.token) {
-          Cookies.set('access-token', data.token, { expires: 7 });
-        }
-
-        const role = ctx.data.user.role || "reader";
-        if (email === "admin@fable.com" || role === "admin") {
-          router.push('/dashboard/admin');
-        } else if (role === "writer") {
-          router.push('/dashboard/writer');
-        } else {
-          router.push('/dashboard/reader');
-        }
-        router.refresh();
-      },
-      onError: (ctx) => {
-        // ৩. ভুল হলে টোস্ট মেসেজ আপডেট হবে
-        toast.error(ctx.error.message || "Invalid email or password", { id: toastId });
-        setLoading(false);
-      }
-    });
-  } catch (err) {
-    // ৪. হুট করে ক্রাশ করলে টোস্ট পুরোপুরি বন্ধ হয়ে যাবে
-    toast.dismiss(toastId);
-    setLoading(false);
-  }
-};
-
-
-  const handleGoogleLogin = async () => {
     try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "/dashboard",
-      }, {
+      await authClient.signIn.email({ email, password }, {
         onSuccess: async (ctx) => {
+          // ২. সাকসেস হলে ঐ নির্দিষ্ট আইডিকে আপডেট করতে হবে
+          toast.success("Login Successful!", { id: toastId });
 
           const loggedUser = { email: ctx.data.user.email };
           const response = await fetch(`${SERVER_URL}/api/jwt`, {
@@ -84,9 +41,40 @@ const LoginForm = () => {
           if (data.token) {
             Cookies.set('access-token', data.token, { expires: 7 });
           }
+
+          const role = ctx.data.user.role || "reader";
+          if (email === "admin@fable.com" || role === "admin") {
+            router.push('/dashboard/admin');
+          } else if (role === "writer") {
+            router.push('/dashboard/writer');
+          } else {
+            router.push('/dashboard/reader');
+          }
+          router.refresh();
+        },
+        onError: (ctx) => {
+          // ৩. ভুল হলে টোস্ট মেসেজ আপডেট হবে
+          toast.error(ctx.error.message || "Invalid email or password", { id: toastId });
+          setLoading(false);
         }
       });
     } catch (err) {
+      // ৪. হুট করে ক্রাশ করলে টোস্ট পুরোপুরি বন্ধ হয়ে যাবে
+      toast.dismiss(toastId);
+      setLoading(false);
+    }
+  };
+
+
+  const handleGoogleLogin = async () => {
+    try {
+
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard", 
+      });
+    } catch (err) {
+      console.error("Google Login Error:", err);
       toast.error("Google login failed");
     }
   };

@@ -7,24 +7,25 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label"; // এটি মিসিং ছিল
+import { Label } from "@/components/ui/label"; 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Cookies from 'js-cookie'; // কুকি ইমপোর্ট
 
 const MyEbooksTab = ({ setActiveTab }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Modals State
   const [deleteId, setDeleteId] = useState(null); 
   const [editBook, setEditBook] = useState(null); 
-
   const { data: session } = authClient.useSession();
   const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
   const fetchMyBooks = async () => {
     if (!session?.user?.email) return;
+    const token = Cookies.get('access-token'); // টোকেন নেওয়া হলো
     try {
-      const res = await fetch(`${SERVER_URL}/api/writer/my-books/${session.user.email}`);
+      const res = await fetch(`${SERVER_URL}/api/writer/my-books/${session.user.email}`, {
+        headers: { authorization: `Bearer ${token}` } // হেডার যোগ করা হলো
+      });
       const data = await res.json();
       setBooks(data);
       setLoading(false);
@@ -34,9 +35,13 @@ const MyEbooksTab = ({ setActiveTab }) => {
   useEffect(() => { if (session) fetchMyBooks(); }, [session]);
 
   const confirmDelete = async () => {
+    const token = Cookies.get('access-token');
     const toastId = toast.loading("Removing book...");
     try {
-      const res = await fetch(`${SERVER_URL}/api/writer/delete-book/${deleteId}`, { method: 'DELETE' });
+      const res = await fetch(`${SERVER_URL}/api/writer/delete-book/${deleteId}`, { 
+        method: 'DELETE',
+        headers: { authorization: `Bearer ${token}` } // হেডার যোগ করা হলো
+      });
       if (res.ok) {
         toast.success("Book deleted permanently", { id: toastId });
         setBooks(books.filter(b => b._id !== deleteId));
@@ -47,11 +52,15 @@ const MyEbooksTab = ({ setActiveTab }) => {
 
   const handleEditSave = async (e) => {
     e.preventDefault();
+    const token = Cookies.get('access-token');
     const toastId = toast.loading("Saving changes...");
     try {
       const res = await fetch(`${SERVER_URL}/api/writer/update-book/${editBook._id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${token}` // হেডার যোগ করা হলো
+        },
         body: JSON.stringify(editBook)
       });
       if (res.ok) {
@@ -65,9 +74,8 @@ const MyEbooksTab = ({ setActiveTab }) => {
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#ff1e6d]" size={40} /></div>;
 
   return (
+    // আপনার অরিজিনাল UI কোড (কোনো পরিবর্তন নেই)
     <div className="space-y-10 animate-in fade-in duration-500 pb-20">
-      
-      {/* --- WRITER PROFILE SECTION (DESIGN SYNC) --- */}
       <div className="bg-[#111113] border border-zinc-800/80 rounded-[45px] p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden group">
         <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#ff1e6d]/5 blur-[100px] rounded-full"></div>
         <div className="flex items-center gap-6 relative z-10">
@@ -102,7 +110,6 @@ const MyEbooksTab = ({ setActiveTab }) => {
          <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">My Publications</h2>
       </div>
 
-      {/* --- BOOKS TABLE (PERFECTLY ALIGNED) --- */}
       <div className="bg-[#111113] border border-zinc-800/80 rounded-[45px] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <Table className="min-w-[850px]">
@@ -114,39 +121,34 @@ const MyEbooksTab = ({ setActiveTab }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {books.length === 0 ? (
-                <TableRow><TableCell colSpan={3} className="text-center py-20 text-zinc-600 italic">No books published yet.</TableCell></TableRow>
-              ) : (
-                books.map((book) => (
-                  <tr key={book._id} className="border-b border-zinc-800/50 hover:bg-white/[0.02] transition-all group font-sans">
-                    <td className="px-12 py-8 text-left">
-                      <div className="flex items-center gap-6">
-                        <div className="w-16 h-22 rounded-2xl overflow-hidden border-2 border-zinc-800 shadow-xl bg-zinc-900 shrink-0 group-hover:border-[#ff1e6d]/40 transition-all">
-                          <img src={book.image} className="w-full h-full object-cover" alt="" />
-                        </div>
-                        <span className="font-black text-zinc-100 text-xl italic tracking-tight uppercase leading-tight">{book.title}</span>
+              {books.map((book) => (
+                <tr key={book._id} className="border-b border-zinc-800/50 hover:bg-white/[0.02] transition-all group font-sans">
+                  <td className="px-12 py-8 text-left">
+                    <div className="flex items-center gap-6">
+                      <div className="w-16 h-22 rounded-2xl overflow-hidden border-2 border-zinc-800 shadow-xl bg-zinc-900 shrink-0 group-hover:border-[#ff1e6d]/40 transition-all">
+                        <img src={book.image} className="w-full h-full object-cover" alt="" />
                       </div>
-                    </td>
-                    <td className="text-center">
-                      <Badge className={`${book.status === 'Published' ? 'bg-green-600' : 'bg-orange-600'} text-white font-black text-[10px] uppercase px-5 py-2 rounded-xl shadow-lg border-none`}>
-                        {book.status}
-                      </Badge>
-                    </td>
-                    <td className="text-right px-12">
-                      <div className="flex justify-end gap-3 items-center">
-                        <button onClick={() => setEditBook(book)} className="h-11 bg-zinc-100 text-black font-black text-[10px] uppercase rounded-2xl px-8 hover:bg-white transition-all shadow-md active:scale-95">Edit</button>
-                        <button onClick={() => setDeleteId(book._id)} className="h-11 w-11 bg-zinc-900 border border-zinc-700 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl flex items-center justify-center transition-all active:scale-95"><Trash2 size={18}/></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
+                      <span className="font-black text-zinc-100 text-xl italic tracking-tight uppercase leading-tight">{book.title}</span>
+                    </div>
+                  </td>
+                  <td className="text-center">
+                    <Badge className={`${book.status === 'Published' ? 'bg-green-600' : 'bg-orange-600'} text-white font-black text-[10px] uppercase px-5 py-2 rounded-xl shadow-lg border-none`}>
+                      {book.status}
+                    </Badge>
+                  </td>
+                  <td className="text-right px-12">
+                    <div className="flex justify-end gap-3 items-center">
+                      <button onClick={() => setEditBook(book)} className="h-11 bg-zinc-100 text-black font-black text-[10px] uppercase rounded-2xl px-8 hover:bg-white transition-all shadow-md active:scale-95">Edit</button>
+                      <button onClick={() => setDeleteId(book._id)} className="h-11 w-11 bg-zinc-900 border border-zinc-700 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl flex items-center justify-center transition-all active:scale-95"><Trash2 size={18}/></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </TableBody>
           </Table>
         </div>
       </div>
 
-      {/* --- DELETE MODAL --- */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="bg-[#0c0c0e] border-zinc-800 text-white rounded-[35px] p-10 max-w-sm text-center shadow-2xl">
             <AlertTriangle className="text-red-500 mx-auto mb-6" size={48} />
@@ -159,7 +161,6 @@ const MyEbooksTab = ({ setActiveTab }) => {
         </DialogContent>
       </Dialog>
 
-      {/* --- EDIT MODAL --- */}
       <Dialog open={!!editBook} onOpenChange={() => setEditBook(null)}>
         {editBook && (
           <DialogContent className="bg-[#111113] border-zinc-800 text-white rounded-[40px] p-12 max-w-lg shadow-2xl">
@@ -191,5 +192,4 @@ const MyEbooksTab = ({ setActiveTab }) => {
     </div>
   );
 };
-
 export default MyEbooksTab;

@@ -6,6 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from 'framer-motion';
+import Cookies from 'js-cookie'; // ইমপোর্ট করা হলো
 
 
 const EbookSkeleton = () => (
@@ -36,16 +37,29 @@ const BrowsePage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  
+
+  // useEffect এর ভেতর শুধুমাত্র এই পরিবর্তনটুকু করুন
   useEffect(() => {
     if (session?.user?.email) {
-      fetch(`${SERVER_URL}/api/reader/my-library/${session.user.email}`)
-        .then(res => res.json())
-        .then(data => setPurchasedIds(data.map(b => b.bookId)));
+      const token = Cookies.get('access-token');
+      fetch(`${SERVER_URL}/api/reader/my-library/${session.user.email}`, {
+        headers: { authorization: `Bearer ${token}` }
+      })
+        .then(res => {
+          if (!res.ok) return []; // এরর হলে খালি অ্যারে দিবে
+          return res.json();
+        })
+        .then(data => {
+          // --- এরর ফিক্স: ডাটা অ্যারো কি না চেক করছি ---
+          if (Array.isArray(data)) {
+            setPurchasedIds(data.map(b => b.bookId));
+          }
+        })
+        .catch(err => console.error(err));
     }
   }, [session, SERVER_URL]);
 
-  
+
   const fetchBooks = async () => {
     setLoading(true);
     try {
@@ -70,20 +84,20 @@ const BrowsePage = () => {
     return () => clearTimeout(timer);
   }, [search, genre, sort, page, availability]);
 
-  
+
   const handleClearFilters = () => {
     setSearch("");
     setGenre("All");
     setSort("newest");
     setAvailability("all");
     setPage(1);
-    
+
   };
 
   return (
     <div className="min-h-screen bg-[#09090b] py-16 px-6 lg:px-10 text-white">
       <div className="max-w-[1400px] mx-auto">
-        
+
         <h2 className="text-4xl font-black italic mb-10 tracking-tighter  leading-none">
           Discover <span className="text-[#ff1e6d]">Stories</span>
         </h2>
@@ -94,17 +108,17 @@ const BrowsePage = () => {
             {/* Search */}
             <div className="relative flex-1">
               <Search className="absolute left-4 top-3 text-zinc-600" size={18} />
-              <Input 
+              <Input
                 value={search}
-                onChange={(e) => {setSearch(e.target.value); setPage(1);}}
-                className="bg-black/40 border-zinc-800 h-11 pl-12 rounded-xl focus:border-[#ff1e6d] text-white" 
-                placeholder="Search ebooks or authors..." 
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                className="bg-black/40 border-zinc-800 h-11 pl-12 rounded-xl focus:border-[#ff1e6d] text-white"
+                placeholder="Search ebooks or authors..."
               />
             </div>
-            
+
             {/* Filter Dropdowns */}
             <div className="flex flex-wrap gap-3">
-              <Select onValueChange={(val) => {setGenre(val); setPage(1);}} value={genre}>
+              <Select onValueChange={(val) => { setGenre(val); setPage(1); }} value={genre}>
                 <SelectTrigger className="bg-black/40 border-zinc-800 h-11 w-36 rounded-xl text-zinc-400 font-bold text-xs py-5 ">
                   <SelectValue placeholder="Genre" />
                 </SelectTrigger>
@@ -115,7 +129,7 @@ const BrowsePage = () => {
                 </SelectContent>
               </Select>
 
-              <Select onValueChange={(val) => {setAvailability(val); setPage(1);}} value={availability}>
+              <Select onValueChange={(val) => { setAvailability(val); setPage(1); }} value={availability}>
                 <SelectTrigger className="bg-black/40 border-zinc-800 h-11 w-40 rounded-xl text-zinc-400 font-bold text-xs py-5 ">
                   <SelectValue placeholder="Availability" />
                 </SelectTrigger>
@@ -138,7 +152,7 @@ const BrowsePage = () => {
               </Select>
 
               {/* Clear Button */}
-              <button 
+              <button
                 onClick={handleClearFilters}
                 className="h-auto px-4 bg-[#ff1e6d]/10 hover:bg-[#ff1e6d] text-[#ff1e6d] hover:text-white border border-[#ff1e6d]/20 rounded-xl transition-all font-black text-[10px]  flex items-center gap-2 shadow-lg"
               >
@@ -154,13 +168,13 @@ const BrowsePage = () => {
             [...Array(10)].map((_, i) => <EbookSkeleton key={i} />)
           ) : books.length === 0 ? (
             <div className="col-span-full py-24 text-center border-2 border-dashed border-zinc-800 rounded-[40px] bg-zinc-900/10">
-               <p className="text-zinc-600 font-bold italic text-lg  tracking-[4px]">No stories found</p>
+              <p className="text-zinc-600 font-bold italic text-lg  tracking-[4px]">No stories found</p>
             </div>
           ) : (
             books.map((book, index) => {
               const isSold = purchasedIds.includes(book._id);
               return (
-                <motion.div 
+                <motion.div
                   key={book._id}
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -184,9 +198,9 @@ const BrowsePage = () => {
                   <div className="flex items-center justify-between mt-4 px-1 pb-1">
                     <p className="text-[#ff1e6d] font-black text-sm md:text-base italic tracking-tighter">${book.price}</p>
                     <Link href={`/book/${book._id}`}>
-                       <button className={`h-8 px-4 flex items-center justify-between gap-2 rounded-lg font-black text-[9px] transition-all border ${isSold ? 'bg-transparent border-zinc-800 text-zinc-500' : 'bg-transparent border-[#ff1e6d]/50 text-white hover:bg-[#ff1e6d]'}`}>
-                          {isSold ? <><Eye size={12}/> Details</> : <><ShoppingBag size={12}/> Know More</>}
-                       </button>
+                      <button className={`h-8 px-4 flex items-center justify-between gap-2 rounded-lg font-black text-[9px] transition-all border ${isSold ? 'bg-transparent border-zinc-800 text-zinc-500' : 'bg-transparent border-[#ff1e6d]/50 text-white hover:bg-[#ff1e6d]'}`}>
+                        {isSold ? <><Eye size={12} /> Details</> : <><ShoppingBag size={12} /> Know More</>}
+                      </button>
                     </Link>
                   </div>
                 </motion.div>
@@ -200,9 +214,9 @@ const BrowsePage = () => {
           <div className="flex justify-center items-center gap-6 mt-20">
             <button disabled={page === 1} onClick={() => setPage(prev => prev - 1)} className="p-3 bg-[#111113] border border-zinc-800 rounded-2xl disabled:opacity-20 hover:bg-zinc-800 transition-all shadow-xl"><ChevronLeft size={20} /></button>
             <div className="flex items-center gap-2">
-               <span className="font-black text-xs  text-zinc-500">Page</span>
-               <span className="font-black text-lg text-[#ff1e6d] italic">{page}</span>
-               <span className="font-black text-xs  text-zinc-500">of {totalPages}</span>
+              <span className="font-black text-xs  text-zinc-500">Page</span>
+              <span className="font-black text-lg text-[#ff1e6d] italic">{page}</span>
+              <span className="font-black text-xs  text-zinc-500">of {totalPages}</span>
             </div>
             <button disabled={page === totalPages} onClick={() => setPage(prev => prev + 1)} className="p-3 bg-[#111113] border border-zinc-800 rounded-2xl disabled:opacity-20 hover:bg-zinc-800 transition-all shadow-xl"><ChevronRight size={20} /></button>
           </div>
