@@ -88,7 +88,7 @@ const HomePage = () => {
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff1e6d] opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ff1e6d]"></span>
                         </span>
-                        <span className="text-[8px] md:text-[10px] uppercase tracking-[2px] font-bold text-zinc-400 leading-none">
+                        <span className="text-[6px] md:text-[10px] uppercase tracking-[2px] font-bold text-zinc-400 leading-none">
                             Over 12,000 ebooks shared by real writers
                         </span>
                     </motion.div>
@@ -97,17 +97,17 @@ const HomePage = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6 }}
-                        className="text-4xl md:text-7xl  font-black tracking-tighter leading-[0.85] mb-12 italic "
+                        className="text-3xl md:text-7xl  font-black tracking-tighter leading-[0.85] mb-12 italic "
                     >
                         Discover & Read <br />
-                        <span className="text-[#ff1e6d] text-5xl md:text-8xl">Original Ebooks</span>
+                        <span className="text-[#ff1e6d] text-4xl md:text-8xl">Original Ebooks</span>
                     </motion.h1>
 
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
-                        className="max-w-2xl mx-auto text-zinc-500 text-xs md:text-xl leading-relaxed mb-12 italic opacity-80"
+                        className="max-w-2xl mx-auto text-zinc-500 text-[10px] md:text-xl leading-relaxed mb-12 italic opacity-80"
                     >
                         "A curated dark-mode reading platform where independent writers share their craft — and readers fall in love with stories."
                     </motion.p>
@@ -294,8 +294,8 @@ const HomePage = () => {
                         </div>
                     </div>
                     <div className="flex flex-col md:flex-row justify-between items-center border-t border-zinc-800/30 pt-12">
-                        <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[4px]">© 2025 Fable Digital Store. All rights reserved.</p>
-                        <p className="text-zinc-700 text-[8px] font-black uppercase tracking-[2px] mt-4 md:mt-0 italic underline decoration-[#ff1e6d]">Handcrafted for literature lovers.</p>
+                        <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[4px]">© {new Date().getFullYear()} Fable Digital Store. All rights reserved.</p>
+                        <p className="text-zinc-700 text-[8px] font-black uppercase tracking-[2px] mt-4 md:mt-0 italic underline decoration-[#ff1e6d]">Code-crafted for story lovers.</p>
                     </div>
                 </footer>
             </div>
