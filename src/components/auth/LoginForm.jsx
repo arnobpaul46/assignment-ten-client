@@ -4,29 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from 'next/navigation'; // useSearchParams যোগ করা হয়েছে
+import { useRouter } from 'next/navigation'; 
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import Link from 'next/link';
-import Cookies from 'js-cookie'; // কুকি ইমপোর্ট
+import Cookies from 'js-cookie'; 
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
-const LoginForm = () => {
+const LoginForm = ({ redirectTo = null }) => {
   const router = useRouter();
-  const searchParams = useSearchParams(); // ইউআরএল চেক করার জন্য
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
 
-  const redirectTo = searchParams.get('redirectTo');
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // ১. এই আইডিটি মনে রাখতে হবে
+    
     const toastId = toast.loading("Verifying credentials...");
 
     try {
