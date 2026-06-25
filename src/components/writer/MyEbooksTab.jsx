@@ -7,15 +7,15 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label"; 
+import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Cookies from 'js-cookie'; // কুকি ইমপোর্ট
+import Cookies from 'js-cookie';
 
 const MyEbooksTab = ({ setActiveTab }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState(null); 
-  const [editBook, setEditBook] = useState(null); 
+  const [deleteId, setDeleteId] = useState(null);
+  const [editBook, setEditBook] = useState(null);
   const { data: session } = authClient.useSession();
   const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
@@ -38,7 +38,7 @@ const MyEbooksTab = ({ setActiveTab }) => {
     const token = Cookies.get('access-token');
     const toastId = toast.loading("Removing book...");
     try {
-      const res = await fetch(`${SERVER_URL}/api/writer/delete-book/${deleteId}`, { 
+      const res = await fetch(`${SERVER_URL}/api/writer/delete-book/${deleteId}`, {
         method: 'DELETE',
         headers: { authorization: `Bearer ${token}` } // হেডার যোগ করা হলো
       });
@@ -57,7 +57,7 @@ const MyEbooksTab = ({ setActiveTab }) => {
     try {
       const res = await fetch(`${SERVER_URL}/api/writer/update-book/${editBook._id}`, {
         method: 'PATCH',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           authorization: `Bearer ${token}` // হেডার যোগ করা হলো
         },
@@ -69,6 +69,29 @@ const MyEbooksTab = ({ setActiveTab }) => {
         fetchMyBooks();
       }
     } catch (err) { toast.error("Failed to update", { id: toastId }); }
+  };
+
+
+  const togglePublishStatus = async (book) => {
+    const token = Cookies.get('access-token');
+    const newStatus = book.status === 'Published' ? 'Unpublished' : 'Published';
+    const toastId = toast.loading(`${newStatus === 'Published' ? 'Publishing' : 'Unpublishing'}...`);
+    try {
+      const res = await fetch(`${SERVER_URL}/api/writer/update-book/${book._id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        toast.success(`Book ${newStatus}!`, { id: toastId });
+        fetchMyBooks(); // রিফ্রেশ
+      } else throw new Error('Failed');
+    } catch (err) {
+      toast.error('Error updating status', { id: toastId });
+    }
   };
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#ff1e6d]" size={40} /></div>;
@@ -85,7 +108,7 @@ const MyEbooksTab = ({ setActiveTab }) => {
               <AvatarFallback className="bg-zinc-800 text-white font-black text-2xl uppercase">{session?.user?.name?.charAt(0)}</AvatarFallback>
             </Avatar>
             <button onClick={() => setActiveTab("profile")} className="absolute bottom-0 right-0 bg-white text-black p-1.5 rounded-full shadow-lg hover:scale-110 transition-transform">
-               <Settings size={14} />
+              <Settings size={14} />
             </button>
           </div>
           <div className="text-left">
@@ -95,19 +118,19 @@ const MyEbooksTab = ({ setActiveTab }) => {
           </div>
         </div>
         <div className="flex items-center gap-4 shrink-0 relative z-10">
-           <div className="bg-black/40 border border-zinc-800 px-8 py-3.5 rounded-[22px] text-center min-w-[120px]">
-              <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest mb-1">Total Books</p>
-              <p className="text-2xl font-black text-white">{books.length}</p>
-           </div>
-           <button onClick={() => setActiveTab("add-ebook")} className="bg-[#ff1e6d] hover:bg-[#e61a62] text-white px-8 py-4 rounded-[22px] font-black text-xs uppercase shadow-lg active:scale-95 transition-all italic">
-             Publish New
-           </button>
+          <div className="bg-black/40 border border-zinc-800 px-8 py-3.5 rounded-[22px] text-center min-w-[120px]">
+            <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest mb-1">Total Books</p>
+            <p className="text-2xl font-black text-white">{books.length}</p>
+          </div>
+          <button onClick={() => setActiveTab("add-ebook")} className="bg-[#ff1e6d] hover:bg-[#e61a62] text-white px-8 py-4 rounded-[22px] font-black text-xs uppercase shadow-lg active:scale-95 transition-all italic">
+            Publish New
+          </button>
         </div>
       </div>
 
       <div className="flex items-center gap-3 px-2">
-         <BookOpen className="text-[#ff1e6d]" size={24} />
-         <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">My Publications</h2>
+        <BookOpen className="text-[#ff1e6d]" size={24} />
+        <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">My Publications</h2>
       </div>
 
       <div className="bg-[#111113] border border-zinc-800/80 rounded-[45px] overflow-hidden shadow-2xl">
@@ -132,14 +155,20 @@ const MyEbooksTab = ({ setActiveTab }) => {
                     </div>
                   </td>
                   <td className="text-center">
-                    <Badge className={`${book.status === 'Published' ? 'bg-green-600' : 'bg-orange-600'} text-white font-black text-[10px] uppercase px-5 py-2 rounded-xl shadow-lg border-none`}>
-                      {book.status}
-                    </Badge>
+                    <button
+                      onClick={() => togglePublishStatus(book)}
+                      className={`h-11 px-5 rounded-2xl text-[10px] font-black uppercase transition-all active:scale-95 border ${book.status === 'Published'
+                          ? 'bg-green-600/20 border-green-500 text-green-400 hover:bg-green-600 hover:text-white'
+                          : 'bg-zinc-800/50 border-zinc-700 text-zinc-400 hover:bg-zinc-700 hover:text-white'
+                        }`}
+                    >
+                      {book.status === 'Published' ? 'Unpublish' : 'Publish'}
+                    </button>
                   </td>
                   <td className="text-right px-12">
                     <div className="flex justify-end gap-3 items-center">
                       <button onClick={() => setEditBook(book)} className="h-11 bg-zinc-100 text-black font-black text-[10px] uppercase rounded-2xl px-8 hover:bg-white transition-all shadow-md active:scale-95">Edit</button>
-                      <button onClick={() => setDeleteId(book._id)} className="h-11 w-11 bg-zinc-900 border border-zinc-700 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl flex items-center justify-center transition-all active:scale-95"><Trash2 size={18}/></button>
+                      <button onClick={() => setDeleteId(book._id)} className="h-11 w-11 bg-zinc-900 border border-zinc-700 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl flex items-center justify-center transition-all active:scale-95"><Trash2 size={18} /></button>
                     </div>
                   </td>
                 </tr>
@@ -151,41 +180,41 @@ const MyEbooksTab = ({ setActiveTab }) => {
 
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="bg-[#0c0c0e] border-zinc-800 text-white rounded-[35px] p-10 max-w-sm text-center shadow-2xl">
-            <AlertTriangle className="text-red-500 mx-auto mb-6" size={48} />
-            <DialogTitle className="text-xl font-black uppercase italic tracking-tighter">Permanently Delete?</DialogTitle>
-            <DialogDescription className="text-zinc-500 mt-3 text-sm">This book will be removed from Fable Store forever.</DialogDescription>
-            <div className="flex gap-4 mt-10">
-              <button onClick={() => setDeleteId(null)} className="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl h-14 font-bold text-xs text-zinc-400">Cancel</button>
-              <button onClick={confirmDelete} className="flex-1 bg-red-600 rounded-2xl h-14 font-black text-xs uppercase shadow-lg shadow-red-600/20 active:scale-95">Delete</button>
-            </div>
+          <AlertTriangle className="text-red-500 mx-auto mb-6" size={48} />
+          <DialogTitle className="text-xl font-black uppercase italic tracking-tighter">Permanently Delete?</DialogTitle>
+          <DialogDescription className="text-zinc-500 mt-3 text-sm">This book will be removed from Fable Store forever.</DialogDescription>
+          <div className="flex gap-4 mt-10">
+            <button onClick={() => setDeleteId(null)} className="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl h-14 font-bold text-xs text-zinc-400">Cancel</button>
+            <button onClick={confirmDelete} className="flex-1 bg-red-600 rounded-2xl h-14 font-black text-xs uppercase shadow-lg shadow-red-600/20 active:scale-95">Delete</button>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={!!editBook} onOpenChange={() => setEditBook(null)}>
         {editBook && (
           <DialogContent className="bg-[#111113] border-zinc-800 text-white rounded-[40px] p-12 max-w-lg shadow-2xl">
-             <DialogHeader><DialogTitle className="text-2xl font-black italic uppercase tracking-tight">Update <span className="text-[#ff1e6d]">Ebook</span></DialogTitle></DialogHeader>
-             <form onSubmit={handleEditSave} className="space-y-6 mt-8">
+            <DialogHeader><DialogTitle className="text-2xl font-black italic uppercase tracking-tight">Update <span className="text-[#ff1e6d]">Ebook</span></DialogTitle></DialogHeader>
+            <form onSubmit={handleEditSave} className="space-y-6 mt-8">
+              <div className="space-y-2">
+                <Label className="text-zinc-100 font-black uppercase text-[10px] tracking-[4px] ml-1">Ebook Title</Label>
+                <Input value={editBook.title} onChange={(e) => setEditBook({ ...editBook, title: e.target.value })} className="bg-black/40 border-zinc-800 h-14 text-white font-bold rounded-2xl focus:border-[#ff1e6d] focus:ring-0" />
+              </div>
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
-                   <Label className="text-zinc-100 font-black uppercase text-[10px] tracking-[4px] ml-1">Ebook Title</Label>
-                   <Input value={editBook.title} onChange={(e) => setEditBook({...editBook, title: e.target.value})} className="bg-black/40 border-zinc-800 h-14 text-white font-bold rounded-2xl focus:border-[#ff1e6d] focus:ring-0" />
-                </div>
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                     <Label className="text-zinc-100 font-black uppercase text-[10px] tracking-[4px] ml-1">Price ($)</Label>
-                     <Input type="number" step="0.01" value={editBook.price} onChange={(e) => setEditBook({...editBook, price: e.target.value})} className="bg-black/40 border-zinc-800 h-14 text-white font-bold rounded-2xl" />
-                  </div>
-                  <div className="space-y-2">
-                     <Label className="text-zinc-100 font-black uppercase text-[10px] tracking-[4px] ml-1">Genre</Label>
-                     <Input value={editBook.genre} onChange={(e) => setEditBook({...editBook, genre: e.target.value})} className="bg-black/40 border-zinc-800 h-14 text-white font-bold rounded-2xl" />
-                  </div>
+                  <Label className="text-zinc-100 font-black uppercase text-[10px] tracking-[4px] ml-1">Price ($)</Label>
+                  <Input type="number" step="0.01" value={editBook.price} onChange={(e) => setEditBook({ ...editBook, price: e.target.value })} className="bg-black/40 border-zinc-800 h-14 text-white font-bold rounded-2xl" />
                 </div>
                 <div className="space-y-2">
-                   <Label className="text-zinc-100 font-black uppercase text-[10px] tracking-[4px] ml-1">Full Description</Label>
-                   <textarea value={editBook.description} onChange={(e) => setEditBook({...editBook, description: e.target.value})} className="w-full bg-black/40 border border-zinc-800 rounded-2xl p-6 text-white h-40 focus:border-[#ff1e6d] outline-none transition-all leading-relaxed" />
+                  <Label className="text-zinc-100 font-black uppercase text-[10px] tracking-[4px] ml-1">Genre</Label>
+                  <Input value={editBook.genre} onChange={(e) => setEditBook({ ...editBook, genre: e.target.value })} className="bg-black/40 border-zinc-800 h-14 text-white font-bold rounded-2xl" />
                 </div>
-                <button type="submit" className="w-full bg-[#ff1e6d] hover:bg-[#e61a62] text-white h-16 rounded-2xl font-black shadow-lg shadow-pink-500/20 active:scale-95 transition-all italic uppercase">Save Masterpiece</button>
-             </form>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-zinc-100 font-black uppercase text-[10px] tracking-[4px] ml-1">Full Description</Label>
+                <textarea value={editBook.description} onChange={(e) => setEditBook({ ...editBook, description: e.target.value })} className="w-full bg-black/40 border border-zinc-800 rounded-2xl p-6 text-white h-40 focus:border-[#ff1e6d] outline-none transition-all leading-relaxed" />
+              </div>
+              <button type="submit" className="w-full bg-[#ff1e6d] hover:bg-[#e61a62] text-white h-16 rounded-2xl font-black shadow-lg shadow-pink-500/20 active:scale-95 transition-all italic uppercase">Save Masterpiece</button>
+            </form>
           </DialogContent>
         )}
       </Dialog>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, BookOpen, Star, Play, ArrowRight, Flame, Compass, Heart, Zap, Ghost } from 'lucide-react';
 import { Inter_Tight } from 'next/font/google';
+import { authClient } from "@/lib/auth-client"; 
 
 const interTight = Inter_Tight({
     subsets: ['latin'],
@@ -15,6 +16,7 @@ const interTight = Inter_Tight({
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const HomePage = () => {
+    const { data: session } = authClient.useSession(); 
     const [featuredBooks, setFeaturedBooks] = useState([]);
     const [topWriters, setTopWriters] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -88,7 +90,11 @@ const HomePage = () => {
                                 Browse Ebooks
                             </Button>
                         </Link>
-                        <Link href="/dashboard/writer?tab=add-ebook">
+                        <Link href={!session
+                            ? "/login" 
+                            : session.user.role === "writer"
+                                ? "/dashboard/writer?tab=add-ebook" 
+                                : "/dashboard/reader?tab=profile"}>
                             <Button variant="outline" className="border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900 hover:text-white px-12 h-16 rounded-[22px] font-black text-lg transition-all italic uppercase">
                                 Start Writing
                             </Button>
@@ -154,7 +160,7 @@ const HomePage = () => {
                 </section>
 
                 {/* --- ৩. TOP WRITERS --- */}
-                
+
                 <section className="py-24 border-t border-zinc-800/50 text-center">
                     <h2 className="text-4xl lg:text-5xl font-black italic uppercase tracking-tighter mb-20 inline-block px-8 py-2 border-b-4 border-[#ff1e6d] text-white">
                         Top <span className="text-[#ff1e6d]">Writers</span>

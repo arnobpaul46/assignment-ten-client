@@ -15,7 +15,8 @@ export const auth = betterAuth({
     },
     user: {
         additionalFields: {
-            role: { type: "string", defaultValue: "reader",input: true }
+            role: { type: "string", defaultValue: "reader",input: true },
+            isVerified: { type: "boolean", defaultValue: false } 
         }
     },
     secret: process.env.BETTER_AUTH_SECRET,
