@@ -1,4 +1,4 @@
-// app/login/page.jsx
+"use client";
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import LoginForm from "@/components/auth/LoginForm";
