@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation'; // useSearchParams যোগ করা হয়েছে
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import Link from 'next/link';
@@ -14,9 +14,13 @@ const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const LoginForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams(); // ইউআরএল চেক করার জন্য
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+
+  const redirectTo = searchParams.get('redirectTo');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -42,24 +46,29 @@ const LoginForm = () => {
             Cookies.set('access-token', data.token, { expires: 7 });
           }
 
-          const role = ctx.data.user.role || "reader";
-          if (email === "admin@fable.com" || role === "admin") {
-            router.push('/dashboard/admin');
-          } else if (role === "writer") {
-            router.push('/dashboard/writer');
+
+          if (redirectTo) {
+            router.push(redirectTo); 
           } else {
-            router.push('/dashboard/reader');
+            const role = ctx.data.user.role || "reader";
+            if (email === "admin@fable.com" || role === "admin") {
+              router.push('/dashboard/admin');
+            } else if (role === "writer") {
+              router.push('/dashboard/writer');
+            } else {
+              router.push('/dashboard/reader');
+            }
           }
-          router.refresh();
-        },
-        onError: (ctx) => {
-          // ৩. ভুল হলে টোস্ট মেসেজ আপডেট হবে
-          toast.error(ctx.error.message || "Invalid email or password", { id: toastId });
-          setLoading(false);
-        }
-      });
+            router.refresh();
+          },
+          onError: (ctx) => {
+            
+            toast.error(ctx.error.message || "Invalid email or password", { id: toastId });
+            setLoading(false);
+          }
+        });
     } catch (err) {
-      // ৪. হুট করে ক্রাশ করলে টোস্ট পুরোপুরি বন্ধ হয়ে যাবে
+      
       toast.dismiss(toastId);
       setLoading(false);
     }
@@ -71,7 +80,7 @@ const LoginForm = () => {
 
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard", 
+        callbackURL:redirectTo|| "/dashboard",
       });
     } catch (err) {
       console.error("Google Login Error:", err);

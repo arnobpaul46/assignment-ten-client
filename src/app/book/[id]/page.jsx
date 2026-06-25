@@ -49,7 +49,7 @@ const BookDetailsPage = () => {
   }, [id, session, SERVER_URL]);
 
   const handlePurchase = async () => {
-    if (!session) return router.push('/login');
+    if (!session) return router.push(`/login?redirectTo=/book/${id}`);
     if (isRestrictedRole) return toast.error("Only Readers can purchase.");
     const token = Cookies.get('access-token');
     const toastId = toast.loading("Connecting to Stripe...");
