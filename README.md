@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📚 Fable – Premium Ebook Sharing Platform
 
-## Getting Started
+**Fable** is a sophisticated digital ecosystem designed for literature enthusiasts. It connects independent writers with curious readers in a sleek, high-contrast dark-themed environment. Built with the **MERN Stack**, Fable provides a secure, role-based experience for discovering, purchasing, and publishing original ebooks.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌐 Project Links
+- **Live Deployment:** [Your Vercel URL Here]
+- **Client Repository:** [Your GitHub Client Link]
+- **Server Repository:** [Your GitHub Server Link]
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## ✨ Key Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 👤 Reader Experience
+- **Slick Library:** Access all purchased ebooks instantly in a high-resolution gallery view.
+- **Secure Payments:** Integrated with **Stripe** for a seamless and safe checkout experience.
+- **Smart Wishlist:** Bookmark your favorite stories to read later, managed via a dedicated dashboard.
+- **Dynamic Profile:** Real-time profile updates including display name and avatar synchronization.
 
-## Learn More
+### ✍️ Writer Studio
+- **One-Time Verification:** A professional author verification system to unlock publishing rights.
+- **Ebook Management:** Full CRUD (Create, Read, Update, Delete) operations for your creations.
+- **Author Analytics:** Track your book sales, total earnings, and reader base through a clean ledger.
+- **Visibility Control:** Instantly toggle book status between 'Published' and 'Unpublished'.
 
-To learn more about Next.js, take a look at the following resources:
+### 🛡️ Admin Control Panel
+- **Global Moderation:** Full control over users and content. Ability to update roles or ban accounts.
+- **Content Approval:** Review and manage every ebook submitted to the platform.
+- **Visual Analytics:** Data visualization using **Recharts**, displaying revenue growth and genre distribution.
+- **Transaction History:** A transparent, searchable record of all platform-wide transactions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ Technological Stack
 
-## Deploy on Vercel
+### Frontend
+- **Framework:** Next.js 15 (App Router)
+- **Styling:** Tailwind CSS + Shadcn UI
+- **Animations:** Framer Motion (Staggered reveals & hover effects)
+- **Auth:** BetterAuth (JWT based)
+- **State Management:** React Hooks & URL SearchParams
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Backend
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Database:** MongoDB (Native Driver)
+- **Security:** JWT (JSON Web Tokens) & Bcrypt hashing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📦 NPM Packages Used
+
+### Client Side
+`next-themes`, `framer-motion`, `recharts`, `js-cookie`, `sonner`, `lucide-react`, `better-auth`, `clsx`, `tailwind-merge`
+
+### Server Side
+`stripe`, `jsonwebtoken`, `bcrypt`, `cors`, `dotenv`, `mongodb`, `express`
+
+---
+
+## 🚀 Local Setup Instructions
+
+ ##  **Clone the project:**
+   bash
+   git clone [your-repo-link]
+
+## 1.Frontend Setup:
+    cd fable-client
+    npm install
+    # Create a .env.local file and add:
+    # NEXT_PUBLIC_SERVER_URL=http://localhost:5000
+    # NEXT_PUBLIC_IMGBB_API_KEY=your_key
+    npm run dev
+
+
+## 2.Backend Setup:
+    cd fable-server
+    npm install
+    # Create a .env file and add:
+    # MONGODB_URI=your_mongodb_uri
+    # STRIPE_SECRET_KEY=your_key
+    # JWT_SECRET=your_secret
+    node index.js 
+    or
+    npm run dev
+
+## 📝 Testing Credentials (Admin)
+    Email: admin@fable.com
+    Password: Admin@123
