@@ -117,7 +117,7 @@ const Navbar = () => {
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/login" className={`text-xs md:text-sm font-bold uppercase tracking-widest transition-all ${isActive('/login') ? 'text-[#ff1e6d]' : 'text-zinc-400 hover:text-white'}`}>Login</Link>
-              <Button asChild className="bg-[#ff1e6d] hover:bg-[#e61a62] text-white rounded-full px-5 font-black h-10 transition-all active:scale-95 uppercase text-sm tracking-widest shadow-lg shadow-pink-500/10 border-none">
+              <Button asChild className="bg-[#ff1e6d] hover:bg-[#e61a62] text-white rounded-full px-4 md:px-5 font-black h-10 transition-all active:scale-95 uppercase text-[10px] md:text-sm tracking-widest shadow-lg shadow-pink-500/10 border-none">
                 <Link href="/register">Register</Link>
               </Button>
             </div>
