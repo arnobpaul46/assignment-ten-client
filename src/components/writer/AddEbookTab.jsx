@@ -105,7 +105,7 @@ const AddEbookTab = ({ setActiveTab }) => {
 
       if (res.ok) {
         toast.success("Ebook Live!", { id: toastId });
-        // --- ফিক্সড রিডাইরেক্ট লজিক ---
+        
         router.push("/dashboard/writer?tab=my-ebooks");
         router.refresh();
       }

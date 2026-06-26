@@ -8,7 +8,7 @@ import UserProfileTab from "@/components/reader/UserProfileTab";
 
 export default function ReaderDashboard() {
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab") || "my-library"; // URL থেকে ট্যাব নিচ্ছে
+  const activeTab = searchParams.get("tab") || "my-library"; 
 
   return (
     <div className="max-w-[1300px] mx-auto animate-in fade-in duration-700">

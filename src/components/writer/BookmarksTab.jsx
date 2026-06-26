@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BookMarked, Loader2, ArrowRight } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import Cookies from 'js-cookie'; // কুকি ইমপোর্ট
+import Cookies from 'js-cookie'; 
 import Link from 'next/link';
 
 const BookmarksTab = () => {
@@ -16,12 +16,12 @@ const BookmarksTab = () => {
     const fetchBookmarks = async () => {
       if (!session?.user?.email) return;
       
-      const token = Cookies.get('access-token'); // টোকেন নেওয়া হলো
+      const token = Cookies.get('access-token'); 
       
       try {
         const res = await fetch(`${SERVER_URL}/api/reader/my-bookmarks/${session.user.email}`, {
           headers: {
-            authorization: `Bearer ${token}` // টোকেন হেডারে পাঠানো হলো
+            authorization: `Bearer ${token}` 
           }
         });
         const data = await res.json();

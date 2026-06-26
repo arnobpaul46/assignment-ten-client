@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, Suspense } from 'react'; // Suspense যোগ করা হয়েছে
+import React, { useState, useEffect, Suspense } from 'react'; 
 import Link from 'next/link';
 import { Search, ChevronLeft, ChevronRight, ShoppingBag, Eye, X, Loader2 } from 'lucide-react';
 import { authClient } from "@/lib/auth-client";
@@ -146,7 +146,7 @@ const BrowseContent = () => {
   );
 };
 
-// --- মেইন এক্সপোর্ট (Suspense Wrapper) ---
+// (Suspense Wrapper) ---
 export default function BrowsePage() {
   return (
     <Suspense fallback={<div className="h-screen bg-[#09090b] flex items-center justify-center text-white">Loading Library...</div>}>

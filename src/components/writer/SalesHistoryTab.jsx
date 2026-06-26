@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { authClient } from "@/lib/auth-client";
 import { Loader2, TrendingUp, DollarSign, ArrowUpRight } from "lucide-react";
-import Cookies from 'js-cookie'; // ইমপোর্ট করা হলো
+import Cookies from 'js-cookie'; 
 
 const SalesHistoryTab = () => {
   const [sales, setSales] = useState([]);
@@ -14,10 +14,10 @@ const SalesHistoryTab = () => {
   useEffect(() => {
     const fetchSales = async () => {
       if (!session?.user?.email) return;
-      const token = Cookies.get('access-token'); // টোকেন নেওয়া হলো
+      const token = Cookies.get('access-token'); 
       try {
         const res = await fetch(`${SERVER_URL}/api/writer/sales/${session.user.email}`, {
-          headers: { authorization: `Bearer ${token}` } // হেডার পাঠানো হলো
+          headers: { authorization: `Bearer ${token}` } 
         });
         const data = await res.json();
         setSales(data);

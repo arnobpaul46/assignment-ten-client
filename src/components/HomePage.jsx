@@ -74,7 +74,7 @@ const HomePage = () => {
     const currentBook = featuredBooks[currentIndex];
 
     return (
-        <div className={`min-h-screen bg-[#09090b] text-white selection:bg-[#ff1e6d] ${interTight.className}`}>
+        <div className={`min-h-screen bg-[#09090b] text-white  ${interTight.className}`}>
             <div className="max-w-[85%] mx-auto py-12 ">
 
                 {/* --- HERO SECTION --- */}

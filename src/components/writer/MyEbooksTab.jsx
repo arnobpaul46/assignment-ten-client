@@ -21,10 +21,10 @@ const MyEbooksTab = ({ setActiveTab }) => {
 
   const fetchMyBooks = async () => {
     if (!session?.user?.email) return;
-    const token = Cookies.get('access-token'); // টোকেন নেওয়া হলো
+    const token = Cookies.get('access-token'); 
     try {
       const res = await fetch(`${SERVER_URL}/api/writer/my-books/${session.user.email}`, {
-        headers: { authorization: `Bearer ${token}` } // হেডার যোগ করা হলো
+        headers: { authorization: `Bearer ${token}` } 
       });
       const data = await res.json();
       setBooks(data);
@@ -40,7 +40,7 @@ const MyEbooksTab = ({ setActiveTab }) => {
     try {
       const res = await fetch(`${SERVER_URL}/api/writer/delete-book/${deleteId}`, {
         method: 'DELETE',
-        headers: { authorization: `Bearer ${token}` } // হেডার যোগ করা হলো
+        headers: { authorization: `Bearer ${token}` } 
       });
       if (res.ok) {
         toast.success("Book deleted permanently", { id: toastId });
@@ -59,7 +59,7 @@ const MyEbooksTab = ({ setActiveTab }) => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          authorization: `Bearer ${token}` // হেডার যোগ করা হলো
+          authorization: `Bearer ${token}` 
         },
         body: JSON.stringify(editBook)
       });
@@ -97,7 +97,7 @@ const MyEbooksTab = ({ setActiveTab }) => {
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#ff1e6d]" size={40} /></div>;
 
   return (
-    // আপনার অরিজিনাল UI কোড (কোনো পরিবর্তন নেই)
+    
     <div className="space-y-10 animate-in fade-in duration-500 pb-20">
       <div className="bg-[#111113] border border-zinc-800/80 rounded-[45px] p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden group">
         <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#ff1e6d]/5 blur-[100px] rounded-full"></div>

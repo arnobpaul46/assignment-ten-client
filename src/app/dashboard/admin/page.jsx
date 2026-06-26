@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams} from 'next/navigation';
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
 import UsersTab from "@/components/admin/UsersTab";
 import EbooksTab from "@/components/admin/EbooksTab";

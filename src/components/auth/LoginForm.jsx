@@ -30,7 +30,7 @@ const LoginForm = ({ redirectTo = null }) => {
     try {
       await authClient.signIn.email({ email, password }, {
         onSuccess: async (ctx) => {
-          // ২. সাকসেস হলে ঐ নির্দিষ্ট আইডিকে আপডেট করতে হবে
+          
           toast.success("Login Successful!", { id: toastId });
 
           const loggedUser = { email: ctx.data.user.email };

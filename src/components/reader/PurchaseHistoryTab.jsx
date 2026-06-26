@@ -15,7 +15,7 @@ const PurchaseHistoryTab = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       if (!session?.user?.email) return;
-      const token = Cookies.get('access-token'); // টোকেন নেওয়া হলো
+      const token = Cookies.get('access-token'); 
       
       try {
         const res = await fetch(`${SERVER_URL}/api/reader/my-library/${session.user.email}`, {

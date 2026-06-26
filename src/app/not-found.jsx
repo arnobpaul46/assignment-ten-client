@@ -7,13 +7,13 @@ export default function NotFound() {
   return (
     <div className="min-h-[calc(100vh-80px)] bg-[#09090b] text-white flex items-center justify-center font-sans selection:bg-[#ff1e6d] px-6 relative overflow-hidden">
       
-      {/* ব্যাকগ্রাউন্ডের বড় আলংকারিক অক্ষর "4" */}
+      
       <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[25rem] md:text-[40rem] font-black text-white/[0.02] pointer-events-none select-none italic z-0">4</div>
       <div className="absolute right-0 top-1/2 -translate-y-1/2 text-[25rem] md:text-[40rem] font-black text-white/[0.02] pointer-events-none select-none italic z-0">4</div>
 
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10 py-10">
          
-         {/* বাম পাশের মেসেজ সেকশন */}
+         
          <div className="space-y-8 border-l-4 border-[#ff1e6d] pl-8 md:pl-12">
             <div className="inline-flex items-center gap-2 bg-[#ff1e6d]/10 border border-[#ff1e6d]/20 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-[#ff1e6d]">
                <AlertCircle size={12} /> 404 Error
@@ -41,7 +41,7 @@ export default function NotFound() {
             </div>
          </div>
 
-         {/* ডান পাশের ড্রয়ার স্টাইল মেনু */}
+         
          <div className="hidden lg:block space-y-6">
             <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[4px] ml-4">Where to next?</p>
             <div className="grid gap-4">

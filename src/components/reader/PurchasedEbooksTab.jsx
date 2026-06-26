@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import Cookies from 'js-cookie'; // কুকি ইমপোর্ট নিশ্চিত করা হয়েছে
+import Cookies from 'js-cookie'; 
 
 const PurchasedEbooksTab = () => {
   const [books, setBooks] = useState([]);
@@ -22,13 +22,13 @@ const PurchasedEbooksTab = () => {
   const fetchLibrary = async () => {
     if (!session?.user?.email) return;
     
-    // টোকেন নেওয়া হলো
+    
     const token = Cookies.get('access-token');
 
     try {
       const res = await fetch(`${SERVER_URL}/api/reader/my-library/${session.user.email}`, {
         headers: {
-          authorization: `Bearer ${token}` // হেডার পাঠানো হলো
+          authorization: `Bearer ${token}` 
         }
       });
       const data = await res.json();
@@ -78,7 +78,7 @@ const PurchasedEbooksTab = () => {
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#ff1e6d]" size={40} /></div>;
 
   return (
-    // আপনার অরিজিনাল UI কোড...
+    
     <div className="space-y-10 animate-in fade-in duration-700">
       <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none px-2">My <span className="text-[#ff1e6d]">Library</span></h2>
       {books.length === 0 ? (

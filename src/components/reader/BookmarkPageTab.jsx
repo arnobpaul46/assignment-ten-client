@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import Cookies from 'js-cookie';
 
 const BookmarkPageTab = () => {
-  const [bookmarks, setBookmarks] = useState([]); // ডিফল্ট খালি অ্যারো
+  const [bookmarks, setBookmarks] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [removeId, setRemoveId] = useState(null);
   const { data: session } = authClient.useSession();
@@ -17,7 +17,7 @@ const BookmarkPageTab = () => {
   const fetchBookmarks = async () => {
     if (!session?.user?.email) return;
     
-    // টোকেন নেওয়া নিশ্চিত করা হলো
+    
     const token = Cookies.get('access-token');
 
     try {
@@ -29,11 +29,11 @@ const BookmarkPageTab = () => {
       
       const data = await res.json();
       
-      // --- এরর ফিক্স: ডাটা অ্যারো কি না তা চেক করা হচ্ছে ---
+      
       if (Array.isArray(data)) {
         setBookmarks(data);
       } else {
-        setBookmarks([]); // ডাটা না থাকলে খালি অ্যারো সেট হবে
+        setBookmarks([]); 
       }
     } catch (err) { 
       console.error(err); 
@@ -72,7 +72,7 @@ const BookmarkPageTab = () => {
     <div className="space-y-10 animate-in fade-in duration-700 px-2">
       <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none">My <span className="text-[#ff1e6d]">Bookmarks</span></h2>
       
-      {/* --- অ্যারো চেক করার পর ম্যাপ করা হচ্ছে --- */}
+      {/* check if bookmarks is empty */}
       {(!bookmarks || bookmarks.length === 0) ? (
         <div className="flex flex-col items-center justify-center py-24 bg-[#111113]/50 border-2 border-dashed border-zinc-800 rounded-[45px] text-center">
            <Heart size={40} className="text-[#ff1e6d] mb-6" fill="#ff1e6d" />
@@ -95,7 +95,7 @@ const BookmarkPageTab = () => {
         </div>
       )}
 
-      {/* --- মোডাল কোড (অপরিবর্তিত) --- */}
+      {/* remove bookmark dialog */}
       <Dialog open={!!removeId} onOpenChange={() => setRemoveId(null)}>
         <DialogContent className="bg-[#0c0c0e] border-zinc-800 text-white rounded-[30px] p-8 max-w-sm text-center">
             <Heart className="text-[#ff1e6d] mx-auto mb-4" size={40} fill="#ff1e6d" />

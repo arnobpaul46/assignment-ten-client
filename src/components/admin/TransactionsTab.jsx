@@ -40,7 +40,7 @@ const TransactionsTab = () => {
             </TableHeader>
             <TableBody>
               {transactions.map((tx) => {
-                // চেক করুন এটি ভেরিফিকেশন ট্রানজেকশন কিনা
+                
                 const isVerification = tx.type === 'verification';
                 return (
                   <tr 

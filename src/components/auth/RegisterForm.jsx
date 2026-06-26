@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import Cookies from 'js-cookie'; // কুকি ইমপোর্ট
+import Cookies from 'js-cookie'; 
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
@@ -51,7 +51,7 @@ const RegisterForm = () => {
 
         toast.success("Account created successfully!", { id: toastId });
         
-        // রোল অনুযায়ী রিডাইরেক্ট
+        
         if (role === "writer") router.push('/dashboard/writer');
         else router.push('/dashboard/reader');
         

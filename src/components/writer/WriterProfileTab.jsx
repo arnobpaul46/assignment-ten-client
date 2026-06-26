@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Cookies from 'js-cookie'; // ইমপোর্ট করা হলো
+import Cookies from 'js-cookie'; 
 
 const WriterProfileTab = () => {
   const { data: session } = authClient.useSession();
@@ -20,7 +20,7 @@ const WriterProfileTab = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const token = Cookies.get('access-token'); // টোকেন নেওয়া হলো
+    const token = Cookies.get('access-token'); 
     
     setLoading(true);
     const toastId = toast.loading("Updating profile...");
@@ -29,7 +29,7 @@ const WriterProfileTab = () => {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
-          authorization: `Bearer ${token}` // হেডার পাঠানো হলো
+          authorization: `Bearer ${token}` 
         },
         body: JSON.stringify({ name, image })
       });
