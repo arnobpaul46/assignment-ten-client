@@ -22,7 +22,7 @@ const EbookSkeleton = () => (
   </div>
 );
 
-// --- মেইন কন্টেন্ট কম্পোনেন্ট ---
+
 const BrowseContent = () => {
   const searchParams = useSearchParams();
   const initialGenre = searchParams.get("genre") || "All";
@@ -103,18 +103,18 @@ const BrowseContent = () => {
             </div>
             <div className="flex flex-wrap gap-3">
               <Select onValueChange={(val) => { setGenre(val); setPage(1); }} value={genre}>
-                <SelectTrigger className="bg-black/40 border-zinc-800 h-11 w-36 rounded-xl text-zinc-400 font-bold text-xs"><SelectValue placeholder="Genre" /></SelectTrigger>
+                <SelectTrigger className="bg-black/40 border-zinc-800 h-11 w-36 rounded-xl text-zinc-400 font-bold text-xs py-5"><SelectValue placeholder="Genre" /></SelectTrigger>
                 <SelectContent className="bg-[#0c0c0e] border-zinc-800 text-white font-bold">{["All", "Fantasy", "Horror", "Sci-Fi", "Romance", "Mystery", "Biography"].map(g => (<SelectItem key={g} value={g}>{g}</SelectItem>))}</SelectContent>
               </Select>
               <Select onValueChange={(val) => { setAvailability(val); setPage(1); }} value={availability}>
-                <SelectTrigger className="bg-black/40 border-zinc-800 h-11 w-40 rounded-xl text-zinc-400 font-bold text-xs"><SelectValue placeholder="Availability" /></SelectTrigger>
-                <SelectContent className="bg-[#0c0c0e] border-zinc-800 text-white font-bold"><SelectItem value="all">All Ebooks</SelectItem><SelectItem value="available">In Stock</SelectItem><SelectItem value="sold">Purchased</SelectItem></SelectContent>
+                <SelectTrigger className="bg-black/40 border-zinc-800 h-11 w-35 rounded-xl text-zinc-400 font-bold text-xs py-5"><SelectValue placeholder="Availability" /></SelectTrigger>
+                <SelectContent className="bg-[#0c0c0e] border-zinc-800 text-white font-bold "><SelectItem value="all">All Ebooks</SelectItem><SelectItem value="available">In Stock</SelectItem><SelectItem value="sold">Purchased</SelectItem></SelectContent>
               </Select>
               <Select onValueChange={(val) => setSort(val)} value={sort}>
-                <SelectTrigger className="bg-black/40 border-zinc-800 h-11 w-36 rounded-xl text-zinc-400 font-bold text-xs"><SelectValue placeholder="Sort" /></SelectTrigger>
+                <SelectTrigger className="bg-black/40 border-zinc-800 h-11 w-36 rounded-xl text-zinc-400 font-bold text-xs py-5"><SelectValue placeholder="Sort" /></SelectTrigger>
                 <SelectContent className="bg-[#0c0c0e] border-zinc-800 text-white font-bold"><SelectItem value="newest">Newest</SelectItem><SelectItem value="price-low">Price: Low</SelectItem><SelectItem value="price-high">Price: High</SelectItem></SelectContent>
               </Select>
-              <button onClick={handleClearFilters} className="h-11 px-4 bg-[#ff1e6d]/10 hover:bg-[#ff1e6d] text-[#ff1e6d] hover:text-white border border-[#ff1e6d]/20 rounded-xl transition-all font-black text-[10px] uppercase flex items-center gap-2"><X size={14} /> Clear</button>
+              <button onClick={handleClearFilters} className="h-10 px-4 bg-[#ff1e6d]/10 hover:bg-[#ff1e6d] text-[#ff1e6d] hover:text-white border border-[#ff1e6d]/20 rounded-xl transition-all font-black text-[10px] uppercase flex items-center gap-2"><X size={14} /> Clear</button>
             </div>
           </div>
         </div>
@@ -127,7 +127,7 @@ const BrowseContent = () => {
                 <motion.div key={book._id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.05 }} className="bg-[#111113] p-2 md:p-3 rounded-[24px] border border-white/5 flex flex-col group transition-all hover:translate-y-[-5px]">
                   <div className="relative aspect-[3/4.2] rounded-[18px] overflow-hidden mb-3 bg-zinc-900 shadow-lg"><img src={book.image} className="w-full h-full object-cover transition-all group-hover:scale-110 duration-700" alt="" /><div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[8px] font-black tracking-widest text-zinc-300 border border-white/5">{book.genre}</div>{isSold && (<div className="absolute top-3 right-3 bg-[#ff1e6d] px-2 py-0.5 rounded text-[8px] font-black tracking-widest text-white shadow-lg">Sold</div>)}</div>
                   <div className="space-y-1 px-1 flex-1"><h4 className="text-white font-bold text-xs md:text-sm leading-tight truncate italic">{book.title}</h4><p className="text-zinc-500 text-[8px] md:text-[9px] font-black tracking-widest leading-none">by {book.writerName}</p></div>
-                  <div className="flex items-center justify-between mt-4 px-1 pb-1"><p className="text-[#ff1e6d] font-black text-sm md:text-base italic tracking-tighter">${book.price}</p><Link href={`/book/${book._id}`}><button className={`h-8 px-4 flex items-center justify-between gap-2 rounded-lg font-black text-[9px] transition-all border ${isSold ? 'bg-transparent border-zinc-800 text-zinc-500' : 'bg-transparent border-[#ff1e6d]/50 text-white hover:bg-[#ff1e6d]'}`}>{isSold ? <><Eye size={12} /> Details</> : <><ShoppingBag size={12} /> Know More</>}</button></Link></div>
+                  <div className="flex items-center justify-between mt-4 px-1 pb-1"><p className="text-[#ff1e6d] font-black text-[12px] md:text-base italic tracking-tighter">${book.price}</p><Link href={`/book/${book._id}`}><button className={`h-8 px-2 flex items-center justify-between gap-2 rounded-lg font-black text-[10px] transition-all border ${isSold ? 'bg-transparent border-zinc-800 text-zinc-500' : 'bg-transparent border-[#ff1e6d]/50 text-white hover:bg-[#ff1e6d]'}`}>{isSold ? <><Eye size={12} /> Details</> : <><ShoppingBag size={12} /> Know More</>}</button></Link></div>
                 </motion.div>
               );
             })

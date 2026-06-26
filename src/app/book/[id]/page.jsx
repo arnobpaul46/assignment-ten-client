@@ -38,7 +38,7 @@ const BookDetailsPage = () => {
             headers: { authorization: `Bearer ${token}` }
           });
           const bookmarkData = await bookmarkRes.json();
-          // --- এরর ফিক্স: চেক করছি ডাটা কি আসলেই অ্যারো কি না ---
+          
           if (Array.isArray(bookmarkData)) {
             setIsBookmarked(bookmarkData.some(b => b.bookId === id));
           }
@@ -87,24 +87,24 @@ const BookDetailsPage = () => {
       <div className="max-w-[85%] mx-auto">
         <button onClick={() => router.back()} className="flex items-center gap-2 text-zinc-500 hover:text-white uppercase font-black text-[10px] mb-12"><ArrowLeft size={16}/> Go Back</button>
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-20 items-start">
-          <div className="w-full lg:w-[320px] shrink-0"><div className="aspect-[3/4.5] rounded-[40px] overflow-hidden border border-zinc-800 shadow-2xl bg-zinc-900"><img src={book.image} className="w-full h-full object-cover" alt="" /></div></div>
-          <div className="flex-1 space-y-8">
-             <h1 className="text-6xl font-black italic uppercase leading-none">{book.title}</h1>
-             <p className="text-2xl font-black text-[#ff1e6d] italic uppercase">By {book.writerName}</p>
+          <div className="w-[80%] lg:w-[320px] shrink-0"><div className="aspect-[3/4.5] rounded-[40px] overflow-hidden border border-zinc-800 shadow-2xl bg-zinc-900"><img src={book.image} className="w-full h-full object-cover" alt="" /></div></div>
+          <div className="flex-1 space-y-3">
+             <h1 className="text-3xl md:text-6xl font-black italic uppercase leading-none">{book.title}</h1>
+             <p className="text-xl font-black text-[#ff1e6d] italic uppercase">By {book.writerName}</p>
              <div className="bg-zinc-900/40 border border-zinc-800 p-8 rounded-[35px] italic text-zinc-300">"{book.description}"</div>
              
-             {/* বাটন সেকশন - এখানে রাইটার বুকমার্ক করতে পারবে */}
+             
              <div className="flex flex-wrap items-center gap-5 pt-6">
                 {isPurchased ? (
-                  <div className="bg-green-600/10 border border-green-600/30 text-green-500 h-20 px-10 rounded-[25px] flex items-center gap-4 font-black uppercase text-xl italic"><CheckCircle2 size={30} /> In Library</div>
+                  <div className="bg-green-600/10 border border-green-600/30 text-green-500 h-15 md:h-20 px-3 md:px-10  rounded-[18px] flex items-center gap-2 font-black uppercase text-sm md:text-xl italic"><CheckCircle2 size={30} /> In Library</div>
                 ) : isRestrictedRole ? (
-                  <div className="bg-zinc-900 border border-zinc-800 text-zinc-500 h-20 px-10 rounded-[25px] flex items-center gap-4 font-black uppercase text-sm italic"><ShieldAlert size={24} /> Only Readers can purchase</div>
+                  <div className="bg-zinc-900 border border-zinc-800 text-zinc-500 h-15 md:h-20 px-3 md:px-10  rounded-[18px] flex items-center gap-4 font-black uppercase text-sm md:text-lg italic"><ShieldAlert size={24} /> Only Readers can purchase</div>
                 ) : (
-                  <button onClick={handlePurchase} className="h-20 px-12 bg-[#ff1e6d] hover:bg-[#e61a62] text-white rounded-[25px] font-black text-2xl uppercase italic shadow-lg flex items-center gap-4"><ShoppingBag size={28} /> Buy for ${book.price}</button>
+                  <button onClick={handlePurchase} className="h-15 md:h-20 px-3 md:px-10 bg-[#ff1e6d] hover:bg-[#e61a62] text-white rounded-[18px] font-black text-sm md:text-2xl uppercase italic shadow-lg flex items-center gap-2"><ShoppingBag size={28} /> Buy for ${book.price}</button>
                 )}
 
-                {/* রাইটার এবং রিডার সবার জন্য বুকমার্ক আইকন */}
-                <button onClick={handleBookmark} className={`h-20 w-20 rounded-[25px] flex items-center justify-center border transition-all ${isBookmarked ? "bg-[#ff1e6d] border-[#ff1e6d] text-white shadow-lg shadow-pink-500/20" : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-[#ff1e6d]"}`}>
+                
+                <button onClick={handleBookmark} className={`h-15 w-15 md:h-20 md:w-20 rounded-[25px] flex items-center justify-center border transition-all ${isBookmarked ? "bg-[#ff1e6d] border-[#ff1e6d] text-white shadow-lg shadow-pink-500/20" : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-[#ff1e6d]"}`}>
                    <Bookmark size={30} fill={isBookmarked ? "white" : "none"} />
                 </button>
              </div>

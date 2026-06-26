@@ -97,7 +97,7 @@ const HomePage = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6 }}
-                        className="text-3xl md:text-7xl  font-black tracking-tighter leading-[0.85] mb-12 italic "
+                        className="text-3xl md:text-7xl  font-black tracking-tighter leading-[0.85] mb-8 italic "
                     >
                         Discover & Read <br />
                         <span className="text-[#ff1e6d] text-4xl md:text-8xl">Original Ebooks</span>
@@ -219,17 +219,17 @@ const HomePage = () => {
                     <h2 className="text-4xl lg:text-5xl font-black italic uppercase tracking-tighter mb-20 inline-block border-b-4 border-[#ff1e6d] px-8 py-2">
                         Top <span className="text-[#ff1e6d]">Writers</span>
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {topWriters.map((writer, i) => (
                             <motion.div
                                 key={i}
                                 whileHover={{ scale: 1.05 }}
-                                className="bg-[#111113] p-10 rounded-[50px] border border-white/5 flex items-center gap-8 shadow-2xl hover:border-[#ff1e6d]/40 transition-all group cursor-pointer"
+                                className="bg-[#111113] p-8 rounded-[40px] border border-white/5 flex items-center gap-8 shadow-2xl hover:border-[#ff1e6d]/40 transition-all group cursor-pointer"
                             >
-                                <img src={writer.image || "https://via.placeholder.com/100"} className="h-24 w-24 rounded-[35px] border-4 border-[#ff1e6d] p-1 shadow-lg shadow-pink-500/20 group-hover:scale-110 transition-transform object-cover" alt="" />
+                                <img src={writer.image || "https://via.placeholder.com/100"} className="h-20 w-20 rounded-[35px] border-4 border-[#ff1e6d] p-1 shadow-lg shadow-pink-500/20 group-hover:scale-110 transition-transform object-cover" alt="" />
                                 <div className="text-left">
-                                    <h4 className="text-white font-black text-2xl italic tracking-tighter leading-none uppercase">{writer.name}</h4>
-                                    <p className="text-[#ff1e6d] text-[10px] font-black uppercase tracking-widest mt-3 flex items-center gap-2 italic"><Star size={14} fill="#ff1e6d" /> {writer.salesCount} Sales</p>
+                                    <h4 className="text-white font-black text-xl italic tracking-tighter leading-none uppercase">{writer.name}</h4>
+                                    <p className="text-[#ff1e6d] text-[10px] font-black uppercase tracking-widest mt-2 flex items-center gap-2 italic"><Star size={14} fill="#ff1e6d" /> {writer.salesCount} Sales</p>
                                 </div>
                             </motion.div>
                         ))}
