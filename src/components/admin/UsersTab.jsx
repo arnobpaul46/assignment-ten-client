@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+
 import { ShieldAlert, ShieldCheck, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,7 +26,7 @@ const UsersTab = () => {
 
   useEffect(() => { fetchUsers(); }, []);
 
-  // ১. রোল আপডেট ফাংশন
+  
   const handleRoleChange = async (id, newRole) => {
     const token = Cookies.get('access-token');
     try {
@@ -42,7 +42,7 @@ const UsersTab = () => {
     } catch (err) { toast.error("Failed to update role"); }
   };
 
-  // ২. ব্লক/আনব্লক ফাংশন
+  
   const handleBlockToggle = async (id, currentStatus) => {
     const token = Cookies.get('access-token');
     try {
@@ -62,7 +62,7 @@ const UsersTab = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none px-2">Manage <span className="text-[#ff1e6d]">Users</span></h2>
+      <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none px-2">Manage <span className="text-[#ff1e6d]">Users ({users.length})</span></h2>
 
       <div className="bg-[#111113] border border-zinc-800/80 rounded-[35px] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto custom-scrollbar">

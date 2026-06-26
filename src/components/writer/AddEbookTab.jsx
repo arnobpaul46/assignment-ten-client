@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Upload, Loader2, Sparkles, BookOpen, X, ShieldCheck, CreditCard } from "lucide-react";
-import { useSearchParams, useRouter } from 'next/navigation'; // useRouter যোগ করা হয়েছে
+import { useSearchParams, useRouter } from 'next/navigation'; 
 import {
   Select,
   SelectContent,
@@ -23,7 +23,7 @@ const AddEbookTab = ({ setActiveTab }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [genre, setGenre] = useState("");
 
-  const router = useRouter(); // রিডাইরেক্টের জন্য
+  const router = useRouter(); 
   const searchParams = useSearchParams();
   const verifyStatus = searchParams.get('verify');
   const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
@@ -68,7 +68,7 @@ const AddEbookTab = ({ setActiveTab }) => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (loading) return; // --- ডাবল ক্লিক প্রোটেকশন ---
+    if (loading) return; 
 
     const token = Cookies.get('access-token');
     if (!selectedFile || !genre) return toast.error("All fields required");

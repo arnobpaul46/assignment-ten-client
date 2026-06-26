@@ -63,7 +63,7 @@ const EbooksTab = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none px-2">Global <span className="text-[#ff1e6d]">Moderation</span></h2>
+      <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none px-2">Global <span className="text-[#ff1e6d]">Moderation ({books.length})</span></h2>
 
       <div className="bg-[#111113] border border-zinc-800/80 rounded-[35px] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto custom-scrollbar">
